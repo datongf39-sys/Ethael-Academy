@@ -397,6 +397,41 @@ button { font-family: inherit; cursor: pointer; }
 .mm-body { flex:1; overflow-y:auto; padding:14px 16px; }
 
 /* ============================================================
+   GRADE BADGES
+   ============================================================ */
+.gb-badge { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:12px; font-weight:600; width:26px; height:26px; border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.gb-S { background:rgba(201,168,76,.2);  color:var(--gold); border:1px solid var(--gb2); }
+.gb-A { background:rgba(90,138,90,.15);  color:var(--ok);   border:1px solid rgba(90,138,90,.3); }
+.gb-B { background:rgba(107,138,201,.15);color:var(--mp);   border:1px solid rgba(107,138,201,.3); }
+.gb-C { background:var(--ac2);           color:var(--tx2);  border:1px solid var(--bd2); }
+.gb-D { background:rgba(192,72,58,.1);   color:var(--ng);   border:1px solid rgba(192,72,58,.2); }
+.gb-F { background:rgba(192,72,58,.2);   color:var(--ng);   border:1px solid rgba(192,72,58,.4); }
+
+/* Exam modal rows */
+.exam-row { display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--bd); border-radius:5px; margin-bottom:5px; background:var(--bg); }
+.exam-cinfo { flex:1; min-width:0; }
+.exam-cn { font-size:11px; color:var(--tx); font-weight:500; margin-bottom:2px; }
+.exam-cs { font-size:9px; color:var(--tx3); }
+.makeup-btn { font-size:9px; padding:3px 8px; border-radius:3px; border:1px solid rgba(192,72,58,.5); color:var(--ng); background:transparent; cursor:pointer; white-space:nowrap; transition:all .18s; font-family:inherit; flex-shrink:0; }
+.makeup-btn:hover:not(:disabled) { background:rgba(192,72,58,.1); }
+.makeup-btn:disabled { opacity:.4; cursor:default; }
+.makeup-ok { font-size:9px; color:var(--ok); white-space:nowrap; flex-shrink:0; }
+
+/* Course progress row */
+.cp-row { display:flex; justify-content:space-between; align-items:center; padding:3px 0; border-bottom:1px solid var(--bd); font-size:9px; }
+.cp-row:last-child { border-bottom:none; }
+.cp-name { color:var(--tx2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:90px; }
+.cp-val  { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+.cp-att  { color:var(--tx3); }
+.cp-reg  { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:9px; color:var(--gold); }
+
+/* ============================================================
+   SAVE TOAST
+   ============================================================ */
+#save-toast { position:fixed; bottom:72px; left:50%; transform:translateX(-50%) translateY(10px); background:var(--bg2); border:1px solid var(--gb2); color:var(--gold); font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:10px; padding:7px 18px; border-radius:20px; z-index:600; opacity:0; transition:opacity .22s,transform .22s; pointer-events:none; letter-spacing:.08em; box-shadow:0 4px 18px var(--sh2); white-space:nowrap; }
+#save-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
@@ -491,6 +526,9 @@ button { font-family: inherit; cursor: pointer; }
   <div class="tb-right">
     <button class="icon-btn" onclick="openCal()" title="课程表">
       <svg viewBox="0 0 13 13" fill="none"><rect x="1.5" y="2" width="10" height="9.5" rx="1.5" stroke="currentColor" stroke-width=".9"/><path d="M4.5 1v2M8.5 1v2" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/><path d="M1.5 5h10" stroke="currentColor" stroke-width=".7"/><rect x="3.5" y="6.5" width="2" height="1.5" rx=".3" fill="currentColor" opacity=".5"/><rect x="7.5" y="6.5" width="2" height="1.5" rx=".3" fill="currentColor" opacity=".5"/></svg>
+    </button>
+    <button class="icon-btn" onclick="openSaveMo()" title="存档 / 读档">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width=".9"/><rect x="3.5" y="1.5" width="6" height="3.5" rx=".5" fill="currentColor" opacity=".25"/><rect x="3.5" y="7" width="6" height="4" rx=".5" stroke="currentColor" stroke-width=".8"/><rect x="5" y="8" width="3" height="2" rx=".3" fill="currentColor" opacity=".35"/></svg>
     </button>
     <button class="icon-btn" onclick="toggleNfp()" title="通知">
       <div class="ndot" id="ndot"></div>
@@ -629,6 +667,11 @@ button { font-family: inherit; cursor: pointer; }
         <div class="ti"><div class="td done"></div><div class="tt">了解星辰祭的基本情况</div></div>
         <div class="ti"><div class="td"></div><div class="tt">与同学进行至少一次对话</div></div>
       </div>
+      <div class="gdiv"></div>
+      <div class="ps">
+        <div class="psl">课程成绩</div>
+        <div id="rp-course-list"><div style="font-size:9px;color:var(--tx3);padding:2px 0;">尚未开始课程</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -732,7 +775,10 @@ button { font-family: inherit; cursor: pointer; }
     <div class="hs"><span class="hs-n">金币 Aurum</span><span class="hs-v" id="mob-gold">128</span></div>
     <div class="hs"><span class="hs-n">魔力水晶 Crystallum</span><span class="hs-v" style="color:var(--mp)">3</span></div>
     <div class="gdiv" style="margin:14px 0;"></div>
-    <button style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--gb);background:var(--ac);color:var(--gold);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;">导出存档</button>
+    <div class="psl" style="margin-top:14px;">存档</div>
+    <button onclick="manualSave();updateSaveInfo()" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;font-weight:500;margin-bottom:7px;">保存当前进度</button>
+    <button onclick="openSaveMo();closeMM('mm-set')" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;margin-bottom:7px;">读取 / 导出 / 导入存档</button>
+    <button onclick="exportSave()" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;">导出存档文件 (.json)</button>
   </div>
 </div>
 
@@ -744,6 +790,37 @@ button { font-family: inherit; cursor: pointer; }
     <div class="mt-m">地图 · 伊瑟尔学院</div>
     <div class="ms-m" id="map-cur-loc">当前位置：梦蝶楼</div>
     <div id="map-content" style="max-height:58vh;overflow-y:auto;padding-right:4px;"></div>
+  </div>
+</div>
+
+<!-- ===== EXAM MODAL ===== -->
+<div class="mo" id="exam-mo">
+  <div class="mb" style="max-width:520px;">
+    <div class="mt-m" id="exam-mo-title">期中考试 · Midterm Examinations</div>
+    <div class="ms-m" id="exam-mo-sub">第8周 · 考试结果已出炉</div>
+    <div id="exam-mo-body" style="max-height:52vh;overflow-y:auto;padding-right:4px;margin-bottom:14px;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div style="font-size:9px;color:var(--tx3);">D/F 可申请补考（消耗 SP -15, MP -10）</div>
+      <button onclick="closeExamMo()" style="padding:8px 20px;border-radius:5px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;font-weight:500;flex-shrink:0;">结束考试周，继续</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SAVE MODAL ===== -->
+<div class="mo" id="save-mo" onclick="closeSaveMo(event)">
+  <div class="mb" style="max-width:360px;">
+    <button class="mc-btn" onclick="closeSaveMo(null,1)">✕</button>
+    <div class="mt-m">存档 · Archive</div>
+    <div class="ms-m">游戏进度保存在本设备浏览器中</div>
+    <div id="save-info"></div>
+    <div style="display:grid;gap:7px;">
+      <button onclick="manualSave();updateSaveInfo()" style="padding:9px;border-radius:5px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;font-weight:500;">保存当前进度</button>
+      <button onclick="doLoadSave()" style="padding:9px;border-radius:5px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">读取存档</button>
+      <div style="height:1px;background:linear-gradient(90deg,transparent,var(--gb2),transparent);margin:2px 0;"></div>
+      <button onclick="exportSave()" style="padding:9px;border-radius:5px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">导出存档文件 (.json)</button>
+      <button onclick="triggerImport()" style="padding:9px;border-radius:5px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">导入存档文件</button>
+      <input type="file" id="save-file-input" accept=".json" style="display:none" onchange="importSave(event)">
+    </div>
   </div>
 </div>
 
@@ -998,7 +1075,9 @@ const G = {
   locKey: CHAR.dept + '_d',
   stats: { ...CHAR.stats },
   repute: { [CHAR.dept]: 0 },  // 各学部声望 -100~100
-  attendance: {},               // 课程出勤率
+  attendance: {},               // 课程出勤率（兼容旧存档）
+  courseProgress: {},           // {courseName: {attended,total,regular,examScore,finalScore,grade,makeupScore,makeupDone}}
+  examsDone: { midterm: false, final: false },
 };
 
 /* ============================================================
@@ -1174,9 +1253,17 @@ A.skip_class.exec = function() {
     else if (CHAR.race === 'dragonborn') caught_text = '龙裔的体型实在太显眼了。';
     else if (CHAR.race === 'merfolk') caught_text = '日间鳞光在走廊里一闪而过，引起了教授的注意。';
     pushNarr([`你悄悄向后门移动……`, caught_text]);
-    pushEvt(`被发现！（${CHAR.raceName}基础概率${Math.round(chance*100)}%）`,'违纪记录 +1，强制返回座位。');
     G.viol++;
+    // 被抓回座位：计入出勤但扣平时分
+    const cc = todayCourse();
+    if (cc) {
+      initCourseProgress(cc.name);
+      G.courseProgress[cc.name].attended++;
+      // 不加 regular points（被抓惩罚）
+    }
+    pushEvt(`被发现！（${CHAR.raceName}基础概率${Math.round(chance*100)}%）`,`违纪记录 +1，强制返回。出勤 ${cc ? G.courseProgress[cc.name].attended+'/'+G.courseProgress[cc.name].total : '—'}`);
     renderAll();
+    autoSave();
     setTimeout(() => setBtns('class'), 200);
   } else {
     pushNarr([`走廊里空无一人。你成功溜出来了——${G.loc}的风吹散了课堂的紧张感。`]);
@@ -1281,6 +1368,7 @@ function renderAll() {
   const lel = g('lp-loc'); if (lel) lel.textContent = G.loc;
   const lsub = g('lp-loc-sub');
   if (lsub) lsub.textContent = LOCATIONS[G.locKey] ? LOCATIONS[G.locKey].sub : '';
+  renderCourseSection();
 }
 
 /* ============================================================
@@ -1290,13 +1378,30 @@ function act(id) {
   const a = A[id];
   if (!a) return;
   if (a.custom) { if(a.exec) a.exec(); return; }
+
+  // 课程进度追踪
+  const c = todayCourse();
+  let evtExtra = '';
+  if (c && ['take_notes','ask_question','chat_classmate'].includes(id)) {
+    initCourseProgress(c.name);
+    const cp = G.courseProgress[c.name];
+    let pts = 0;
+    if (id === 'take_notes')     { cp.attended++; pts = 5 + Math.floor(Math.random() * 4); }  // 5-8
+    else if (id === 'ask_question') { cp.attended++; pts = 6 + Math.floor(Math.random() * 5); }  // 6-10
+    else if (id === 'chat_classmate') { cp.attended++; pts = 1 + Math.floor(Math.random() * 2); }  // 1-2
+    cp.regular += pts;
+    const reg = getRegularScore(c.name);
+    evtExtra = ` · 出勤 ${cp.attended}/${cp.total} · 平时分 ${reg}`;
+  }
+
   addDiv();
   const narr = typeof a.n === 'function' ? a.n() : (Array.isArray(a.n) ? a.n : [a.n]);
   pushNarr(narr);
-  pushEvt(a.e[0], a.e[1]);
+  pushEvt(a.e[0], a.e[1] + evtExtra);
   if (a.mp) G.mp = Math.max(0, G.mp - a.mp);
   if (a.sp) G.sp = Math.min(G.spMax, G.sp + a.sp);
   renderAll();
+  autoSave();
   setTimeout(() => setBtns(a.nx || 'class'), 200);
 }
 
@@ -1341,19 +1446,34 @@ function advTime() {
     G.loc = DEPTS[CHAR.dept].dorm;
   }
   renderAll();
+  autoSave();
   renderCalendar();
   addDiv();
   pushBanner();
   const c = todayCourse();
+
+  // 考试触发：每学期第8周和第16周清晨触发
+  if (G.day === 0 && G.period === 0 && (G.week === 8 || G.week === 16)) {
+    const examType = G.week === 8 ? 'midterm' : 'final';
+    if (!G.examsDone[examType]) {
+      setTimeout(() => triggerExam(examType), 700);
+    }
+  }
+
   if (G.period === 4) {
     pushNarr([`夜深了，你回到${DEPTS[CHAR.dept].dorm}，洗漱后躺上床铺。窗外月光将银叶白杨的影子拉得细长。`,`翌日又是新的开始。（HP/MP/SP 全额恢复）`]);
     pushEvt('就寝完成。','进入明天。');
     setTimeout(()=>setBtns('free'),300);
   } else if (c) {
-    // 有课
+    // 有课：记录本节为总节数
+    initCourseProgress(c.name);
+    G.courseProgress[c.name].total++;
     G.locKey = CHAR.dept + '_h';
     G.loc = DEPTS[CHAR.dept].hall;
+    const cp = G.courseProgress[c.name];
+    const attRate = cp.total > 0 ? Math.round(cp.attended / cp.total * 100) : 100;
     pushNarr([`${PERIODS[G.period]}的课程时间到了。你前往${DEPTS[CHAR.dept].hall}，${c.name}即将开始。`]);
+    pushEvt(`${c.name}`, `出勤率 ${attRate}% · 平时分 ${getRegularScore(c.name)}`);
     renderAll();
     setBtns('class');
   } else {
@@ -1361,6 +1481,380 @@ function advTime() {
     pushNarr([txt ? txt() : '时间悄然流逝……']);
     setBtns('free');
   }
+}
+
+/* ============================================================
+   COURSE PROGRESS 课程进度追踪
+   ============================================================ */
+function initCourseProgress(name) {
+  if (!G.courseProgress[name]) {
+    G.courseProgress[name] = {
+      attended: 0, total: 0, regular: 0,
+      examScore: null, finalScore: null, grade: null,
+      makeupScore: null, makeupDone: false
+    };
+  }
+}
+
+// 平时分（0-100，以每节8分为满分基准）
+function getRegularScore(name) {
+  const cp = G.courseProgress[name];
+  if (!cp || cp.total === 0) return 0;
+  return Math.min(100, Math.round(cp.regular / (cp.total * 8) * 100));
+}
+
+// 出勤率（0.0-1.0）
+function getAttendanceRate(name) {
+  const cp = G.courseProgress[name];
+  if (!cp || cp.total === 0) return 1;
+  return cp.attended / cp.total;
+}
+
+function gradeLabel(score) {
+  if (score >= 95) return 'S';
+  if (score >= 85) return 'A';
+  if (score >= 70) return 'B';
+  if (score >= 60) return 'C';
+  if (score >= 50) return 'D';
+  return 'F';
+}
+
+// 侧边栏课程成绩渲染
+function renderCourseSection() {
+  const el = g('rp-course-list');
+  if (!el) return;
+  const deptCourses = DEPTS[CHAR.dept].courses;
+  const commonCourses = COMMON_COURSES.slice(0, 2);
+  const all = [...deptCourses, ...commonCourses];
+  const tracked = all.filter(c => G.courseProgress[c.name] && G.courseProgress[c.name].total > 0);
+  if (tracked.length === 0) {
+    el.innerHTML = `<div style="font-size:9px;color:var(--tx3);padding:2px 0;">尚未开始课程</div>`;
+    return;
+  }
+  const currCourse = todayCourse();
+  el.innerHTML = tracked.map(c => {
+    const cp = G.courseProgress[c.name];
+    const reg = getRegularScore(c.name);
+    const rate = Math.round(getAttendanceRate(c.name) * 100);
+    const isCurr = currCourse && currCourse.name === c.name;
+    const gradeStr = cp.grade ? `<span class="gb-badge gb-${cp.grade}" style="width:18px;height:18px;font-size:10px;border-radius:3px;">${cp.grade}</span>` : '';
+    return `<div class="cp-row">
+      <span class="cp-name" style="${isCurr?'color:var(--gold);':''}">${c.name}</span>
+      <span class="cp-val">
+        <span class="cp-att">${cp.attended}/${cp.total}</span>
+        <span class="cp-reg">${reg}</span>
+        ${gradeStr}
+      </span>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   EXAM SYSTEM 考试系统
+   ============================================================ */
+function allExamCourses() {
+  const deptCourses = DEPTS[CHAR.dept].courses;
+  const commonCourses = COMMON_COURSES.slice(0, 2);
+  return [...deptCourses, ...commonCourses].filter(
+    c => G.courseProgress[c.name] && G.courseProgress[c.name].total > 0
+  );
+}
+
+function calcExamResult(name) {
+  const rate = getAttendanceRate(name);
+  const reg  = getRegularScore(name);
+  const intB = Math.floor((G.stats.int - 10) * 2);
+  const magB = Math.floor((G.stats.mag - 10) * 1.5);
+  const roll = Math.floor(Math.random() * 30) - 5; // -5 to +24
+  const attPenalty = rate < 0.5 ? -15 : rate < 0.7 ? -5 : rate >= 0.9 ? 5 : 0;
+  const examScore  = Math.max(0, Math.min(100, 50 + intB + magB + roll + attPenalty));
+  const finalScore = Math.round(reg * 0.3 + examScore * 0.7);
+  return { examScore, reg, finalScore, rate };
+}
+
+function triggerExam(examType) {
+  if (G.examsDone[examType]) return;
+  const isMidterm = examType === 'midterm';
+  const courses   = allExamCourses();
+
+  // 计算各科成绩
+  for (const c of courses) {
+    const cp = G.courseProgress[c.name];
+    if (cp && cp.examScore === null) {
+      const r = calcExamResult(c.name);
+      cp.examScore  = r.examScore;
+      cp.finalScore = r.finalScore;
+      cp.grade      = gradeLabel(r.finalScore);
+    }
+  }
+  G.examsDone[examType] = true;
+
+  // 叙事提示
+  pushNarr([
+    isMidterm
+      ? `第8周已至——伊瑟尔学院期中考试周正式开始。走廊里贴满考试时间表，同学们的脸上写满了紧张与期待。`
+      : `第16周的钟声敲响，本学期最后一次大考来临。银叶大道的风中带着特别的庄严气息。`
+  ]);
+  pushEvt(
+    isMidterm ? '期中考试结果' : '期末考试结果',
+    '综合成绩 = 平时分×30% + 考试分×70%。D/F可申请补考。'
+  );
+  renderAll();
+  autoSave();
+  setTimeout(() => renderExamModal(examType, courses), 500);
+}
+
+function renderExamModal(examType, courses) {
+  const isMidterm = examType === 'midterm';
+  const title = g('exam-mo-title');
+  const sub   = g('exam-mo-sub');
+  const body  = g('exam-mo-body');
+  if (title) title.textContent = isMidterm ? '期中考试 · Midterm Examinations' : '期末考试 · Final Examinations';
+  if (sub)   sub.textContent   = isMidterm ? `第8周 · ${SEMS[G.sem]}` : `第16周 · ${SEMS[G.sem]}`;
+
+  if (!body) return;
+  if (courses.length === 0) {
+    body.innerHTML = `<div style="text-align:center;padding:20px;color:var(--tx3);font-size:11px;">暂无可参加的考试课程</div>`;
+  } else {
+    body.innerHTML = courses.map(c => {
+      const cp = G.courseProgress[c.name];
+      if (!cp) return '';
+      const grade      = cp.grade || '—';
+      const finalScore = cp.finalScore ?? 0;
+      const reg        = getRegularScore(c.name);
+      const attPct     = Math.round(getAttendanceRate(c.name) * 100);
+      const canMakeup  = (grade === 'D' || grade === 'F') && !cp.makeupDone;
+      const makeupDone = cp.makeupDone;
+      return `<div class="exam-row" id="exam-row-${c.name.replace(/\s/g,'')}">
+        <div class="gb-badge gb-${grade}">${grade}</div>
+        <div class="exam-cinfo">
+          <div class="exam-cn">${c.name}<span style="font-size:8px;color:var(--tx3);margin-left:5px;">${c.type}</span></div>
+          <div class="exam-cs">平时分 ${reg} · 考试分 ${cp.examScore} · 出勤 ${attPct}% → 综合 ${finalScore}</div>
+        </div>
+        ${canMakeup
+          ? `<button class="makeup-btn" onclick="doMakeup('${c.name}')">申请补考</button>`
+          : makeupDone
+            ? `<span class="makeup-ok">${cp.makeupScore >= 60 ? '补考通过' : '补考未过'} ${cp.makeupScore}</span>`
+            : ''
+        }
+      </div>`;
+    }).join('');
+  }
+  g('exam-mo').classList.add('open');
+}
+
+function doMakeup(name) {
+  const cp = G.courseProgress[name];
+  if (!cp || cp.makeupDone) return;
+  if (G.sp < 15 || G.mp < 10) {
+    showToast('SP不足15或MP不足10，无法补考', true);
+    return;
+  }
+  G.sp = Math.max(0, G.sp - 15);
+  G.mp = Math.max(0, G.mp - 10);
+
+  // 补考：最高70分
+  const intB    = Math.floor((G.stats.int - 10) * 1.5);
+  const magB    = Math.floor((G.stats.mag - 10) * 1);
+  const roll    = Math.floor(Math.random() * 20);
+  const makeup  = Math.min(70, Math.max(0, 35 + intB + magB + roll));
+  cp.makeupScore = makeup;
+  cp.makeupDone  = true;
+  const passed   = makeup >= 60;
+  if (passed) { cp.grade = 'C'; cp.finalScore = makeup; }
+
+  renderAll();
+  autoSave();
+  showToast(passed ? `补考通过！${name}：${makeup}分 → C` : `补考未过：${makeup}分（需60）`, !passed);
+
+  // 更新当前考试行
+  const row = document.getElementById(`exam-row-${name.replace(/\s/g,'')}`);
+  if (row) {
+    const badge = row.querySelector('.gb-badge');
+    if (badge) { badge.className = `gb-badge gb-${cp.grade}`; badge.textContent = cp.grade; }
+    const scoreEl = row.querySelector('.exam-cs');
+    if (scoreEl) scoreEl.textContent = `平时分 ${getRegularScore(name)} · 考试分 ${cp.examScore} · 补考 ${makeup} → ${passed?'C':'F'}`;
+    const btn = row.querySelector('.makeup-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.className = 'makeup-ok';
+      btn.textContent = (passed ? '补考通过 ' : '补考未过 ') + makeup;
+      btn.style.color = passed ? 'var(--ok)' : 'var(--ng)';
+    }
+  }
+}
+
+function closeExamMo() {
+  g('exam-mo').classList.remove('open');
+}
+
+/* ============================================================
+   SAVE SYSTEM 存档系统
+   ============================================================ */
+const SAVE_KEY = 'ethael-save-v1';
+
+function buildSaveData() {
+  return {
+    version: 1,
+    timestamp: Date.now(),
+    state: {
+      sem: G.sem, week: G.week, day: G.day, period: G.period,
+      hp: G.hp, hpMax: G.hpMax,
+      mp: G.mp, mpMax: G.mpMax,
+      sp: G.sp, spMax: G.spMax,
+      gold: G.gold, crystal: G.crystal, viol: G.viol,
+      loc: G.loc, locKey: G.locKey,
+      stats: { ...G.stats },
+      repute: { ...G.repute },
+      attendance: { ...G.attendance },
+      courseProgress: JSON.parse(JSON.stringify(G.courseProgress)),
+      examsDone: { ...G.examsDone },
+    }
+  };
+}
+
+function autoSave() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(buildSaveData())); } catch(e) {}
+}
+
+function manualSave() {
+  autoSave();
+  showToast('存档已保存 ✦');
+}
+
+function getSaveInfo() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    return data ? data.timestamp : null;
+  } catch(e) { return null; }
+}
+
+function updateSaveInfo() {
+  const el = g('save-info');
+  if (!el) return;
+  const ts = getSaveInfo();
+  if (ts) {
+    const d = new Date(ts);
+    const fmt = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    el.innerHTML = `<div style="font-size:9px;color:var(--tx3);margin-bottom:12px;padding:6px 9px;background:var(--bg3);border-radius:4px;border:1px solid var(--bd);">上次存档：${fmt}</div>`;
+  } else {
+    el.innerHTML = `<div style="font-size:9px;color:var(--tx3);margin-bottom:12px;padding:6px 9px;background:var(--bg3);border-radius:4px;border:1px solid var(--bd);">暂无存档记录</div>`;
+  }
+}
+
+function applyLoadedState(s) {
+  if (s.sem !== undefined)  G.sem  = s.sem;
+  if (s.week !== undefined) G.week = s.week;
+  if (s.day !== undefined)  G.day  = s.day;
+  if (s.period !== undefined) G.period = s.period;
+  if (s.hp !== undefined)   G.hp   = s.hp;
+  if (s.hpMax !== undefined)G.hpMax= s.hpMax;
+  if (s.mp !== undefined)   G.mp   = s.mp;
+  if (s.mpMax !== undefined)G.mpMax= s.mpMax;
+  if (s.sp !== undefined)   G.sp   = s.sp;
+  if (s.spMax !== undefined)G.spMax= s.spMax;
+  if (s.gold !== undefined) G.gold = s.gold;
+  if (s.crystal !== undefined) G.crystal = s.crystal;
+  if (s.viol !== undefined) G.viol = s.viol;
+  if (s.loc !== undefined)  G.loc  = s.loc;
+  if (s.locKey !== undefined) G.locKey = s.locKey;
+  if (s.stats) Object.assign(G.stats, s.stats);
+  if (s.repute) G.repute = { ...s.repute };
+  if (s.attendance) G.attendance = { ...s.attendance };
+  if (s.courseProgress) G.courseProgress = JSON.parse(JSON.stringify(s.courseProgress));
+  if (s.examsDone) G.examsDone = { ...s.examsDone };
+}
+
+function loadSaveData() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data || !data.state) return false;
+    applyLoadedState(data.state);
+    return data.timestamp;
+  } catch(e) { return false; }
+}
+
+function doLoadSave() {
+  const ts = loadSaveData();
+  if (ts) {
+    renderAll();
+    renderCalendar();
+    const c = todayCourse();
+    setBtns(c ? 'class' : 'free');
+    showToast('存档已读取 ✦');
+    closeSaveMo(null, 1);
+  } else {
+    showToast('没有找到存档', true);
+  }
+}
+
+function exportSave() {
+  const data = buildSaveData();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const d = new Date().toISOString().slice(0, 10);
+  a.download = `ethael-save-${d}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('存档已导出 ✦');
+}
+
+function triggerImport() {
+  const inp = g('save-file-input');
+  if (inp) inp.click();
+}
+
+function importSave(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data || !data.state) { showToast('存档文件无效', true); return; }
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      applyLoadedState(data.state);
+      renderAll();
+      renderCalendar();
+      const c = todayCourse();
+      setBtns(c ? 'class' : 'free');
+      showToast('存档已导入 ✦');
+      closeSaveMo(null, 1);
+    } catch(ex) {
+      showToast('存档文件损坏', true);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function openSaveMo() {
+  updateSaveInfo();
+  g('save-mo').classList.add('open');
+}
+function closeSaveMo(e, force) {
+  if (force || (e && e.target.id === 'save-mo'))
+    g('save-mo').classList.remove('open');
+}
+
+let _toastTimer = null;
+function showToast(msg, isErr) {
+  const el = g('save-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isErr ? 'var(--ng)' : 'var(--gold)';
+  el.classList.add('show');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
 /* ============================================================
@@ -1441,6 +1935,7 @@ document.addEventListener('keydown', e=>{
     document.querySelectorAll('.mo.open').forEach(m=>m.classList.remove('open'));
     document.querySelectorAll('.mm.open').forEach(m=>{ const id=m.id; closeMM(id); });
     const mapm = g('map-mo'); if(mapm) mapm.classList.remove('open');
+    const savm = g('save-mo'); if(savm) savm.classList.remove('open');
   }
 });
 
@@ -1451,6 +1946,8 @@ document.addEventListener('keydown', e=>{
   let t='pink';
   try { t=localStorage.getItem('ethael-theme')||'pink'; } catch(e){}
   setTheme(t);
+  // 尝试读取存档，静默恢复状态
+  loadSaveData();
   renderAll();
   renderCalendar();
 
@@ -1467,5 +1964,6 @@ document.addEventListener('keydown', e=>{
   setBtns(c ? 'class' : 'free');
 })();
 </script>
+<div id="save-toast"></div>
 </body>
 </html>
