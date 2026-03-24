@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>伊瑟尔学院 Ethael Academy</title>
+<!-- Font loading: preconnect first, then stylesheet. display=swap ensures text renders with fallback immediately -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Noto+Serif+SC:wght@300;400;500&family=IM+Fell+English:ital@0;1&display=swap">
+<style>
+/* ============================================================
+   THEME VARIABLES
+   ============================================================ */
+:root, [data-theme="pink"] {
+  --bg:      #FDF4F6;
+  --bg2:     #F7E8ED;
+  --bg3:     #F0D8E0;
+  --pk:      #DFA8B8;
+  --pk2:     #C07888;
+  --pk3:     #8A4860;
+  --gold:    #C9A84C;
+  --gold2:   #DFC080;
+  --gold3:   #8a6e30;
+  --tx:      #2A1520;
+  --tx2:     #7A5060;
+  --tx3:     #B890A0;
+  --bd:      rgba(192,120,136,.18);
+  --bd2:     rgba(192,120,136,.32);
+  --gb:      rgba(201,168,76,.28);
+  --gb2:     rgba(201,168,76,.5);
+  --ac:      rgba(192,120,136,.09);
+  --ac2:     rgba(192,120,136,.18);
+  --hp:      #d07878;
+  --mp:      #6B8AC9;
+  --sp:      #7BAF7B;
+  --ok:      #5A8A5A;
+  --ng:      #C0483A;
+  --sh:      rgba(42,21,32,.07);
+  --sh2:     rgba(42,21,32,.18);
+  --scr:     rgba(42,21,32,.45);
+}
+[data-theme="dark"] {
+  --bg:      #140D12;
+  --bg2:     #1E1220;
+  --bg3:     #28182A;
+  --pk:      #C47090;
+  --pk2:     #E8A0B8;
+  --pk3:     #F2C0D0;
+  --gold:    #C9A84C;
+  --gold2:   #D4AA5A;
+  --gold3:   #6b5520;
+  --tx:      #F2E0EC;
+  --tx2:     #D4A0B8;
+  --tx3:     #8A5878;
+  --bd:      rgba(196,112,144,.18);
+  --bd2:     rgba(196,112,144,.32);
+  --gb:      rgba(201,168,76,.22);
+  --gb2:     rgba(201,168,76,.4);
+  --ac:      rgba(196,112,144,.09);
+  --ac2:     rgba(196,112,144,.18);
+  --hp:      #c06060;
+  --mp:      #4a6aaa;
+  --sp:      #4a8a4a;
+  --ok:      #7ABA7A;
+  --ng:      #E06050;
+  --sh:      rgba(0,0,0,.3);
+  --sh2:     rgba(0,0,0,.55);
+  --scr:     rgba(0,0,0,.6);
+}
+[data-theme="blue"] {
+  --bg:      #F5F7FA;
+  --bg2:     #EDF1F7;
+  --bg3:     #E5ECF5;
+  --pk:      #A8C0D6;
+  --pk2:     #7A9EBE;
+  --pk3:     #4A7AA0;
+  --gold:    #C9A84C;
+  --gold2:   #DFC080;
+  --gold3:   #8a6e30;
+  --tx:      #1A2535;
+  --tx2:     #5A7090;
+  --tx3:     #8AA0BE;
+  --bd:      rgba(122,158,190,.22);
+  --bd2:     rgba(122,158,190,.4);
+  --gb:      rgba(201,168,76,.25);
+  --gb2:     rgba(201,168,76,.45);
+  --ac:      rgba(168,192,214,.11);
+  --ac2:     rgba(168,192,214,.22);
+  --hp:      #c06060;
+  --mp:      #4A7AA0;
+  --sp:      #5A9A5A;
+  --ok:      #3A7A3A;
+  --ng:      #C04030;
+  --sh:      rgba(26,37,53,.07);
+  --sh2:     rgba(26,37,53,.16);
+  --scr:     rgba(26,37,53,.5);
+}
+[data-theme="warm"] {
+  --bg:      #FDF6F0;
+  --bg2:     #FAF0E8;
+  --bg3:     #F5E8DC;
+  --pk:      #E8C5C5;
+  --pk2:     #C9A0A0;
+  --pk3:     #8A6060;
+  --gold:    #C9A84C;
+  --gold2:   #DFC080;
+  --gold3:   #8a6e30;
+  --tx:      #2C1810;
+  --tx2:     #7A5C50;
+  --tx3:     #B89080;
+  --bd:      rgba(201,168,76,.2);
+  --bd2:     rgba(201,168,76,.38);
+  --gb:      rgba(201,168,76,.25);
+  --gb2:     rgba(201,168,76,.5);
+  --ac:      rgba(201,168,76,.07);
+  --ac2:     rgba(201,168,76,.14);
+  --hp:      #d07070;
+  --mp:      #6B8AC9;
+  --sp:      #7BAF7B;
+  --ok:      #5A8A5A;
+  --ng:      #C0483A;
+  --sh:      rgba(44,24,16,.07);
+  --sh2:     rgba(44,24,16,.16);
+  --scr:     rgba(44,24,16,.45);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; -webkit-text-size-adjust: 100%; }
+body {
+  /* Fallback stack: if Google Fonts unavailable, use system serif fonts */
+  font-family: 'Noto Serif SC', 'Source Han Serif CN', 'STSong', 'SimSun', serif;
+  background: var(--bg);
+  color: var(--tx);
+  height: 100dvh;
+  overflow: hidden;
+  transition: background .3s, color .3s;
+}
+button { font-family: inherit; cursor: pointer; }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--bd2); border-radius: 3px; }
+
+/* Cinzel fallback: Georgia, Times -> still looks elegant */
+.cinzel {
+  font-family: 'Cinzel', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+}
+/* IM Fell fallback */
+.fell {
+  font-family: 'IM Fell English', 'Palatino Linotype', Georgia, serif;
+}
+
+/* ============================================================
+   CORNER ORNAMENTS
+   ============================================================ */
+.c-deco { position:fixed; pointer-events:none; z-index:5; opacity:.16; width:52px; height:52px; }
+.c-deco svg { width:100%; height:100%; }
+.c-tl { top:6px; left:6px; }
+.c-tr { top:6px; right:6px; transform:scaleX(-1); }
+.c-bl { bottom:6px; left:6px; transform:scaleY(-1); }
+.c-br { bottom:6px; right:6px; transform:scale(-1,-1); }
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+#topbar {
+  position:fixed; top:0; left:0; right:0; height:48px;
+  background:var(--bg2); border-bottom:1px solid var(--gb);
+  display:flex; align-items:center; padding:0 14px; gap:0;
+  z-index:200; box-shadow:0 2px 10px var(--sh);
+  transition:background .3s, border-color .3s;
+}
+.tb-logo { display:flex; align-items:center; gap:7px; padding-right:12px; border-right:1px solid var(--gb); flex-shrink:0; }
+.tb-logo-icon { height:32px; width:auto; }
+.tb-logo-text { line-height:1.25; }
+.tb-logo-text .t1 { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:10px; font-weight:500; color:var(--gold); letter-spacing:.13em; display:block; }
+.tb-logo-text .t2 { font-size:7.5px; color:var(--tx3); letter-spacing:.07em; display:block; }
+.tb-sep { width:1px; height:18px; background:var(--gb); margin:0 10px; flex-shrink:0; }
+.tb-date { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:9px; color:var(--gold); letter-spacing:.09em; }
+.tb-prow { display:flex; align-items:center; gap:4px; margin-top:1px; }
+.tb-pname { font-size:10px; color:var(--tx2); }
+.pdot { width:5px; height:5px; border-radius:50%; background:var(--gold); animation:pd 2s ease-in-out infinite; }
+@keyframes pd { 0%,100%{opacity:1} 50%{opacity:.35} }
+.tb-pips { display:flex; gap:3px; flex-shrink:0; }
+.pip { width:18px; height:5px; border-radius:3px; transition:background .35s, box-shadow .35s; }
+.pip.done { background:var(--gold3); }
+.pip.curr { background:var(--gold); box-shadow:0 0 5px var(--gb2); }
+.pip.fut  { background:var(--bd); }
+.tb-ptag { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:8px; color:var(--gold); border:1px solid var(--gb2); background:var(--ac); padding:1px 7px; border-radius:3px; letter-spacing:.07em; flex-shrink:0; }
+.tb-char { display:flex; align-items:center; gap:7px; padding:0 12px; border-left:1px solid var(--gb); flex-shrink:0; }
+.tb-avatar { width:26px; height:26px; border-radius:50%; background:var(--ac2); border:1.5px solid var(--pk2); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.tb-cname { font-size:11px; font-weight:500; color:var(--tx); line-height:1.3; }
+.tb-csub  { font-size:9px; color:var(--tx3); }
+.tb-cur { display:flex; gap:10px; align-items:center; padding:0 12px; border-left:1px solid var(--gb); flex-shrink:0; }
+.cur-item { display:flex; align-items:center; gap:4px; }
+.cur-val { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:11px; color:var(--gold); }
+.cur-item.cry .cur-val { color:var(--mp); }
+.tb-right { margin-left:auto; display:flex; align-items:center; gap:6px; }
+.icon-btn { width:28px; height:28px; border-radius:5px; border:1px solid var(--bd); background:transparent; color:var(--tx3); display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; position:relative; }
+.icon-btn:hover { background:var(--ac2); border-color:var(--bd2); color:var(--gold); }
+.icon-btn svg { width:13px; height:13px; }
+.ndot { position:absolute; top:5px; right:5px; width:6px; height:6px; border-radius:50%; background:var(--ng); border:1.5px solid var(--bg2); }
+.theme-sw { display:flex; gap:3px; padding:3px; background:var(--bg3); border-radius:5px; border:1px solid var(--bd); }
+.tbtn { width:13px; height:13px; border-radius:50%; border:1.5px solid transparent; cursor:pointer; transition:transform .18s, border-color .18s; flex-shrink:0; }
+.tbtn:hover { transform:scale(1.18); }
+.tbtn.active { border-color:var(--tx); }
+.tbtn.t-pink { background:#DFA8B8; }
+.tbtn.t-dark { background:#1E1220; border-color:#4A2A40; }
+.tbtn.t-blue { background:#A8C0D6; }
+.tbtn.t-warm { background:#E8C5C5; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+#app { display:flex; height:100dvh; padding-top:48px; }
+
+/* ============================================================
+   PANELS SHARED
+   ============================================================ */
+.panel { background:var(--bg2); border-color:var(--gb); display:flex; flex-direction:column; overflow:hidden; transition:width .28s ease, background .3s, border-color .3s; }
+#lp { width:208px; flex-shrink:0; border-right:1px solid var(--gb); }
+#rp { width:185px; flex-shrink:0; border-left:1px solid var(--gb); }
+#lp.col { width:36px; }
+#rp.col { width:36px; }
+#lp.col .pbody, #rp.col .pbody { display:none; }
+.phead { padding:8px 10px; border-bottom:1px solid var(--gb); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; min-height:34px; }
+.phead-t { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:8.5px; color:var(--gold); letter-spacing:.14em; text-transform:uppercase; }
+.col-btn { width:16px; height:16px; border-radius:3px; border:1px solid var(--bd); background:transparent; color:var(--tx3); font-size:9px; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+.col-btn:hover { color:var(--gold); border-color:var(--gb2); }
+.pbody { flex:1; overflow-y:auto; padding:8px 0; }
+.ps { padding:0 10px 10px; }
+.psl { font-size:8px; color:var(--tx3); letter-spacing:.09em; text-transform:uppercase; margin-bottom:5px; display:flex; align-items:center; gap:5px; }
+.psl::after { content:''; flex:1; height:1px; background:var(--bd); }
+.gdiv { height:1px; background:linear-gradient(90deg,transparent,var(--gb2),transparent); margin:5px 10px; }
+
+/* Schedule */
+.si { display:flex; align-items:stretch; border:1px solid var(--bd); border-radius:5px; overflow:hidden; background:var(--bg); margin-bottom:4px; cursor:pointer; transition:border-color .18s; }
+.si:hover { border-color:var(--bd2); }
+.si.curr { border-color:var(--gold); background:rgba(201,168,76,.03); }
+.si.done { opacity:.45; }
+.si-bar { width:3px; flex-shrink:0; background:var(--bd); }
+.si.curr .si-bar { background:var(--gold); }
+.si.up .si-bar { background:var(--pk2); }
+.si-bd { padding:5px 7px; }
+.si-t  { font-size:8px; color:var(--tx3); }
+.si-n  { font-size:10px; font-weight:500; color:var(--tx); line-height:1.3; }
+.si-d  { font-size:8px; color:var(--tx3); }
+
+/* Location */
+.loc-c { background:var(--bg3); border:1px solid var(--bd); border-radius:5px; padding:6px 8px; display:flex; gap:7px; align-items:center; }
+.loc-c svg { width:20px; height:20px; flex-shrink:0; }
+.loc-n { font-size:11px; font-weight:500; color:var(--tx); }
+.loc-d { font-size:9px; color:var(--tx3); }
+
+/* Quick actions */
+.qa { display:flex; align-items:center; gap:7px; padding:5px 7px; border-radius:4px; border:1px solid var(--bd); background:var(--bg); font-size:10px; color:var(--tx2); margin-bottom:3px; transition:all .18s; width:100%; text-align:left; }
+.qa:hover { background:var(--ac2); border-color:var(--bd2); color:var(--tx); }
+.qa svg { width:11px; height:11px; color:var(--gold); flex-shrink:0; }
+
+/* Stats */
+.sr { margin-bottom:7px; }
+.sl { display:flex; justify-content:space-between; font-size:9px; color:var(--tx3); margin-bottom:2px; }
+.sv { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:9px; }
+.sbg { height:4px; border-radius:2px; background:var(--bd); overflow:hidden; }
+.sf  { height:100%; border-radius:2px; transition:width .45s ease; }
+.sf.hp { background:var(--hp); }
+.sf.mp { background:var(--mp); }
+.sf.sp { background:var(--sp); }
+
+/* Ability grid */
+.ag { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.ac { background:var(--bg3); border:1px solid var(--bd); border-radius:4px; padding:4px 5px; text-align:center; }
+.an { font-size:8px; color:var(--tx3); margin-bottom:1px; }
+.av { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:12px; color:var(--tx); }
+.av.up { color:var(--ok); }
+.av.dn { color:var(--ng); }
+
+/* Hidden stats */
+.hs { display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--bd); font-size:9px; }
+.hs:last-child { border-bottom:none; }
+.hs-n { color:var(--tx2); }
+.hs-v { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:9px; color:var(--gold); }
+
+/* Tasks */
+.ti { display:flex; gap:5px; align-items:flex-start; padding:4px 0; border-bottom:1px solid var(--bd); font-size:9px; }
+.ti:last-child { border-bottom:none; }
+.td { width:5px; height:5px; border-radius:50%; border:1.5px solid var(--gold); flex-shrink:0; margin-top:3px; }
+.td.done { background:var(--gold); }
+.tt { color:var(--tx2); line-height:1.55; }
+
+/* ============================================================
+   CENTER
+   ============================================================ */
+#center { flex:1; min-width:0; display:flex; flex-direction:column; overflow:hidden; }
+#narrative { flex:1; overflow-y:auto; padding:18px 22px; }
+
+.tbanner { display:flex; align-items:center; gap:10px; padding:8px 12px; margin-bottom:14px; background:var(--ac); border-left:2.5px solid var(--gold); border-radius:0 5px 5px 0; animation:si .32s ease; }
+@keyframes si { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+.tbanner svg { width:18px; height:18px; flex-shrink:0; }
+.bt { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:10px; color:var(--gold); letter-spacing:.08em; }
+.bs { font-size:10px; color:var(--tx2); margin-top:1px; }
+
+.nb { margin-bottom:14px; animation:fu .32s ease; }
+@keyframes fu { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+.nb p { font-size:13px; line-height:2; color:var(--tx); text-indent:2em; }
+.nb p+p { margin-top:6px; }
+
+.dlg { margin:10px 0; padding:10px 13px; background:var(--bg2); border:1px solid var(--bd); border-radius:0 7px 7px 7px; position:relative; animation:fu .32s ease; }
+.dlg::before { content:''; position:absolute; top:-1px; left:-1px; width:14px; height:2.5px; background:var(--gold); border-radius:2px 0 0 0; }
+.dw { font-size:9px; color:var(--gold); font-family:'Cinzel','Palatino Linotype',Georgia,serif; letter-spacing:.06em; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.dw::after { content:''; flex:1; height:1px; background:var(--bd); }
+.dt { font-size:12.5px; line-height:1.9; color:var(--tx); font-family:'IM Fell English','Palatino Linotype',Georgia,serif; }
+.dt em { color:var(--tx3); font-style:italic; }
+
+.evc { margin:10px 0; padding:9px 12px; background:var(--bg3); border:1px solid var(--bd2); border-radius:5px; display:flex; gap:9px; align-items:flex-start; animation:fu .32s ease; }
+.evc svg { width:26px; height:26px; flex-shrink:0; }
+.et { font-size:11px; font-weight:500; color:var(--tx); margin-bottom:2px; }
+.ed { font-size:10px; color:var(--tx2); line-height:1.6; }
+
+.ndiv { display:flex; align-items:center; gap:10px; margin:14px 0; color:var(--tx3); }
+.ndiv::before,.ndiv::after { content:''; flex:1; height:1px; background:var(--bd); }
+.ndiv span { font-size:9px; font-family:'Cinzel','Palatino Linotype',Georgia,serif; letter-spacing:.09em; }
+
+/* Action bar */
+#abar { border-top:1px solid var(--gb); background:var(--bg2); padding:8px 16px; flex-shrink:0; transition:background .3s; }
+.actx { font-size:9px; color:var(--tx3); margin-bottom:6px; letter-spacing:.03em; }
+.abtns { display:flex; gap:6px; flex-wrap:wrap; }
+.abtn { padding:6px 14px; border-radius:5px; border:1px solid var(--bd); background:var(--bg); color:var(--tx2); font-size:11px; transition:all .18s; display:flex; align-items:center; gap:5px; }
+.abtn:hover { background:var(--ac2); border-color:var(--bd2); color:var(--tx); }
+.abtn.pri { background:var(--gold); border-color:var(--gold); color:#1A0800; font-weight:500; }
+.abtn.pri:hover { background:var(--gold2); }
+.abtn.dng { border-color:rgba(192,72,58,.28); }
+.abtn.dng:hover { background:rgba(192,72,58,.1); border-color:var(--ng); color:var(--ng); }
+.hk { font-size:8px; color:var(--tx3); background:var(--bg3); border-radius:2px; padding:0 3px; margin-left:1px; }
+.abtn.pri .hk { color:rgba(26,8,0,.45); background:rgba(26,8,0,.1); }
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+.mo { position:fixed; inset:0; background:var(--scr); z-index:400; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .22s; }
+.mo.open { opacity:1; pointer-events:all; }
+.mb { background:var(--bg2); border:1px solid var(--bd2); border-radius:11px; padding:20px; max-width:500px; width:92%; max-height:82vh; overflow-y:auto; box-shadow:0 16px 50px var(--sh2); transform:translateY(12px); transition:transform .25s; }
+.mo.open .mb { transform:translateY(0); }
+.mt-m { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:13px; color:var(--gold); letter-spacing:.1em; margin-bottom:3px; }
+.ms-m { font-size:10px; color:var(--tx3); margin-bottom:14px; }
+.mc-btn { float:right; background:none; border:none; color:var(--tx3); font-size:15px; line-height:1; padding:0; transition:color .18s; }
+.mc-btn:hover { color:var(--tx); }
+
+/* Calendar */
+.cal-hr { display:grid; grid-template-columns:52px repeat(5,1fr); gap:3px; margin-bottom:3px; }
+.cal-dh { font-size:9px; color:var(--tx3); text-align:center; padding:3px; font-family:'Cinzel','Palatino Linotype',Georgia,serif; }
+.cal-r  { display:grid; grid-template-columns:52px repeat(5,1fr); gap:3px; margin-bottom:3px; }
+.cal-tl { font-size:8px; color:var(--tx3); display:flex; align-items:center; }
+.cal-c  { border-radius:3px; border:1px solid var(--bd); background:var(--bg3); padding:3px 4px; min-height:28px; font-size:9px; color:var(--tx2); transition:border-color .18s; }
+.cal-c:hover { border-color:var(--bd2); }
+.cal-c.has  { background:var(--ac2); border-color:var(--pk); color:var(--tx); }
+.cal-c.now  { border-color:var(--gold); background:var(--ac); }
+.cal-c.free { background:var(--bg); color:var(--tx3); font-style:italic; font-size:8px; }
+.cal-c .cn  { font-weight:500; font-size:9px; line-height:1.3; }
+.cal-c .cd  { font-size:8px; color:var(--tx3); }
+
+/* Notification panel */
+#nfp { position:fixed; top:55px; right:10px; width:248px; z-index:300; background:var(--bg2); border:1px solid var(--bd2); border-radius:8px; box-shadow:0 8px 28px var(--sh2); opacity:0; pointer-events:none; transform:translateY(-5px); transition:all .2s; }
+#nfp.open { opacity:1; pointer-events:all; transform:translateY(0); }
+.nfh { padding:8px 12px; border-bottom:1px solid var(--bd); font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:9px; color:var(--gold); letter-spacing:.1em; }
+.nfi { padding:8px 12px; border-bottom:1px solid var(--bd); cursor:pointer; transition:background .15s; }
+.nfi:last-child { border-bottom:none; }
+.nfi:hover { background:var(--ac); }
+.nft { font-size:10px; color:var(--tx); margin-bottom:1px; }
+.nfs { font-size:9px; color:var(--tx3); }
+
+/* ============================================================
+   MOBILE NAV
+   ============================================================ */
+#mnav { display:none; position:fixed; bottom:0; left:0; right:0; height:56px; background:var(--bg2); border-top:1px solid var(--gb); z-index:200; padding-bottom:env(safe-area-inset-bottom); }
+.mnav-inner { display:flex; height:100%; }
+.mnav-btn { flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--tx3); transition:color .18s; padding-bottom:2px; position:relative; }
+.mnav-btn.active { color:var(--gold); }
+.mnav-btn svg { width:20px; height:20px; }
+.mnav-btn span { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:8px; letter-spacing:.05em; }
+
+/* Mobile top bar */
+#mtb { display:none; position:fixed; top:0; left:0; right:0; height:48px; background:var(--bg2); border-bottom:1px solid var(--gb); align-items:center; padding:0 14px; gap:8px; z-index:200; }
+.mtb-title { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:10px; color:var(--gold); letter-spacing:.11em; flex:1; }
+.mtb-per { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:9px; color:var(--tx3); display:flex; align-items:center; gap:5px; }
+
+/* Mobile full-screen modal */
+.mm { position:fixed; inset:0; background:var(--bg); z-index:350; transform:translateY(100%); transition:transform .28s ease; display:flex; flex-direction:column; overflow:hidden; }
+.mm.open { transform:translateY(0); }
+.mm-head { height:52px; background:var(--bg2); border-bottom:1px solid var(--gb); display:flex; align-items:center; padding:0 16px; gap:10px; flex-shrink:0; }
+.mm-title { font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:12px; color:var(--gold); letter-spacing:.1em; flex:1; }
+.mm-back { width:30px; height:30px; border-radius:5px; border:1px solid var(--bd); background:transparent; color:var(--tx2); display:flex; align-items:center; justify-content:center; }
+.mm-back svg { width:13px; height:13px; }
+.mm-body { flex:1; overflow-y:auto; padding:14px 16px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  #topbar { display:none; }
+  #mtb { display:flex; }
+  #lp, #rp { display:none; }
+  #mnav { display:block; }
+  #app { padding-top:48px; padding-bottom:56px; }
+  #narrative { padding:12px 14px; }
+  .hk { display:none; }
+  .c-deco { display:none; }
+}
+@media (max-width:480px) {
+  .abtn { font-size:10px; padding:5px 10px; }
+  .abtns { gap:4px; }
+}
+</style>
+</head>
+<body data-theme="pink">
+
+<!-- Corner ornaments -->
+<div class="c-deco c-tl"><svg viewBox="0 0 52 52" fill="none"><path d="M4 4L4 28M4 4L28 4" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/><circle cx="4" cy="4" r="2" fill="#C9A84C"/><circle cx="16" cy="16" r="1.2" fill="#C9A84C" opacity=".55"/></svg></div>
+<div class="c-deco c-tr"><svg viewBox="0 0 52 52" fill="none"><path d="M4 4L4 28M4 4L28 4" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/><circle cx="4" cy="4" r="2" fill="#C9A84C"/></svg></div>
+<div class="c-deco c-bl"><svg viewBox="0 0 52 52" fill="none"><path d="M4 4L4 28M4 4L28 4" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/><circle cx="4" cy="4" r="2" fill="#C9A84C"/></svg></div>
+<div class="c-deco c-br"><svg viewBox="0 0 52 52" fill="none"><path d="M4 4L4 28M4 4L28 4" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/><circle cx="4" cy="4" r="2" fill="#C9A84C"/></svg></div>
+
+<!-- ===== DESKTOP TOPBAR ===== -->
+<div id="topbar">
+  <div class="tb-logo">
+<img src="docs/校徽透明版.png" class="tb-logo-icon" alt="伊瑟尔学院校徽" />
+    <div class="tb-logo-text">
+      <span class="t1">伊瑟尔学院</span>
+      <span class="t2">Ethael Academy</span>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div>
+    <div class="tb-date" id="tb-date">秋季学期 · 第3周 · 星期二</div>
+    <div class="tb-prow">
+      <div class="pdot"></div>
+      <div class="tb-pname" id="tb-pname">上午</div>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-pips" id="tb-pips">
+    <div class="pip done"></div>
+    <div class="pip curr"></div>
+    <div class="pip fut"></div>
+    <div class="pip fut"></div>
+    <div class="pip fut"></div>
+  </div>
+  <div class="tb-ptag" id="tb-ptag">上午</div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-char">
+    <div class="tb-avatar">
+      <svg width="13" height="14" viewBox="0 0 13 14" fill="none">
+        <circle cx="6.5" cy="4.5" r="2.5" stroke="#C9A84C" stroke-width="1"/>
+        <path d="M1 13Q1 9.5 6.5 9.5Q12 9.5 12 13" stroke="#C9A84C" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="tb-cname">艾琳·薇拉</div>
+      <div class="tb-csub">精灵 · 曦光学部</div>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-cur">
+    <div class="cur-item">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <circle cx="6.5" cy="6.5" r="5" stroke="#C9A84C" stroke-width="1"/>
+        <text x="6.5" y="9.5" text-anchor="middle" font-size="5.5" fill="#C9A84C" font-family="serif">A</text>
+      </svg>
+      <span class="cur-val" id="tb-gold">128</span>
+    </div>
+    <div class="cur-item cry">
+      <svg width="12" height="13" viewBox="0 0 12 13" fill="none">
+        <path d="M6 1L10 5L6 12L2 5Z" stroke="#6B8AC9" stroke-width=".9" fill="none"/>
+        <path d="M2 5L10 5" stroke="#6B8AC9" stroke-width=".7"/>
+      </svg>
+      <span class="cur-val" id="tb-crystal">3</span>
+    </div>
+  </div>
+
+  <div class="tb-right">
+    <button class="icon-btn" onclick="openCal()" title="课程表">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="1.5" y="2" width="10" height="9.5" rx="1.5" stroke="currentColor" stroke-width=".9"/><path d="M4.5 1v2M8.5 1v2" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/><path d="M1.5 5h10" stroke="currentColor" stroke-width=".7"/><rect x="3.5" y="6.5" width="2" height="1.5" rx=".3" fill="currentColor" opacity=".5"/><rect x="7.5" y="6.5" width="2" height="1.5" rx=".3" fill="currentColor" opacity=".5"/></svg>
+    </button>
+    <button class="icon-btn" onclick="toggleNfp()" title="通知">
+      <div class="ndot" id="ndot"></div>
+      <svg viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5C4 1.5 3 3.5 3 5.5v3L2 10h9L10 8.5V5.5C10 3.5 9 1.5 6.5 1.5Z" stroke="currentColor" stroke-width=".9"/><path d="M5 10Q5 12 6.5 12Q8 12 8 10" stroke="currentColor" stroke-width=".8"/></svg>
+    </button>
+    <div class="theme-sw">
+      <div class="tbtn t-pink active" onclick="setTheme('pink',this)" title="粉金白"></div>
+      <div class="tbtn t-dark"        onclick="setTheme('dark',this)" title="粉金黑"></div>
+      <div class="tbtn t-blue"        onclick="setTheme('blue',this)" title="蓝金白"></div>
+      <div class="tbtn t-warm"        onclick="setTheme('warm',this)" title="暖棕金白"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MOBILE TOP BAR ===== -->
+<div id="mtb">
+<img src="docs/校徽透明版.png" class="tb-logo-icon" alt="伊瑟尔学院校徽" />
+  <div class="mtb-title" id="mtb-date">秋季·第3周·周二</div>
+  <div class="mtb-per"><div class="pdot"></div><span id="mtb-per">上午</span></div>
+  <button class="icon-btn" onclick="toggleNfp()" style="margin-left:6px;">
+    <div class="ndot"></div>
+    <svg viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5C4 1.5 3 3.5 3 5.5v3L2 10h9L10 8.5V5.5C10 3.5 9 1.5 6.5 1.5Z" stroke="currentColor" stroke-width=".9"/></svg>
+  </button>
+</div>
+
+<!-- ===== NOTIFICATION PANEL ===== -->
+<div id="nfp">
+  <div class="nfh">通知 · Notifications</div>
+  <div class="nfi"><div class="nft">「治愈术理论与实践」课程即将开始</div><div class="nfs">上午 · 约15分钟后</div></div>
+  <div class="nfi"><div class="nft">银羽辩论社本周活动：魔法伦理讨论</div><div class="nfs">傍晚 · 星期四</div></div>
+  <div class="nfi"><div class="nft">星辰祭倒计时：3天后开幕</div><div class="nfs">秋季学期 第3周</div></div>
+</div>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div id="app">
+
+  <!-- LEFT PANEL -->
+  <div id="lp" class="panel">
+    <div class="phead">
+      <span class="phead-t">行程 &amp; 地点</span>
+      <button class="col-btn" id="lp-btn" onclick="colPanel('lp','lp-btn','◁','▷')">◁</button>
+    </div>
+    <div class="pbody">
+      <div class="ps">
+        <div class="psl">今日课程</div>
+        <div class="si done"><div class="si-bar"></div><div class="si-bd"><div class="si-t">清晨</div><div class="si-n">自由时间</div></div></div>
+        <div class="si curr"><div class="si-bar"></div><div class="si-bd"><div class="si-t">上午 · 进行中</div><div class="si-n">治愈术理论与实践</div><div class="si-d">曦光学部 · 主修</div></div></div>
+        <div class="si up"><div class="si-bar"></div><div class="si-bd"><div class="si-t">下午</div><div class="si-n">魔法史通论</div><div class="si-d">通选课</div></div></div>
+        <div class="si"><div class="si-bar"></div><div class="si-bd"><div class="si-t">傍晚</div><div class="si-n">自由时间</div></div></div>
+        <div class="si"><div class="si-bar"></div><div class="si-bd"><div class="si-t">夜间</div><div class="si-n">就寝</div></div></div>
+      </div>
+      <div class="gdiv"></div>
+      <div class="ps">
+        <div class="psl">当前地点</div>
+        <div class="loc-c">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="13" rx="1.5" stroke="#C9A84C" stroke-width=".9"/><path d="M2 8h16" stroke="#C9A84C" stroke-width=".7"/><path d="M7 4V2M13 4V2" stroke="#C9A84C" stroke-width=".9" stroke-linecap="round"/><rect x="6" y="11" width="3" height="3" rx=".4" fill="#C9A84C" opacity=".4"/></svg>
+          <div><div class="loc-n" id="lp-loc">辉石殿 · 3层</div><div class="loc-d">曦光学部</div></div>
+        </div>
+      </div>
+      <div class="gdiv"></div>
+      <div class="ps">
+        <div class="psl">快捷行动</div>
+        <button class="qa" onclick="qa('map')"><svg viewBox="0 0 11 11" fill="none"><rect x="1" y="1" width="9" height="9" rx="1" stroke="currentColor" stroke-width=".8"/><path d="M4 1v9M7 3v5" stroke="currentColor" stroke-width=".8"/></svg>前往其他地点</button>
+        <button class="qa" onclick="qa('npc')"><svg viewBox="0 0 11 11" fill="none"><circle cx="4.5" cy="3.5" r="2" stroke="currentColor" stroke-width=".8"/><path d="M1 10Q1 7.5 4.5 7.5Q8 7.5 8 10" stroke="currentColor" stroke-width=".8" stroke-linecap="round"/></svg>查看周边NPC</button>
+        <button class="qa" onclick="qa('bag')"><svg viewBox="0 0 11 11" fill="none"><path d="M2 4L2 9.5Q2 10 2.5 10H8.5Q9 10 9 9.5L9 4Z" stroke="currentColor" stroke-width=".8"/><path d="M3.5 4Q3.5 1.5 5.5 1.5Q7.5 1.5 7.5 4" stroke="currentColor" stroke-width=".8"/></svg>背包 (12/30)</button>
+        <button class="qa" onclick="act('rest')"><svg viewBox="0 0 11 11" fill="none"><path d="M1 7h9v1.5Q10 9 9.5 9H1.5Q1 9 1 8.5Z" stroke="currentColor" stroke-width=".8"/><path d="M2 7V5.5Q2 3.5 3.5 3.5H7.5Q9 3.5 9 5.5V7" stroke="currentColor" stroke-width=".8"/></svg>小憩恢复 SP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center">
+    <div id="narrative">
+      <div class="tbanner">
+        <svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#C9A84C" stroke-width="1.1"/><path d="M9 5.5v4l2.5 1.5" stroke="#C9A84C" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><div class="bt" id="bt">上午 · 秋季学期 第3周 星期二</div><div class="bs" id="bs">课程时间：治愈术理论与实践（曦光学部主修）</div></div>
+      </div>
+
+      <div class="nb">
+        <p>清晨的课程已经结束，你离开了宿舍楼「晨露阁」，沿着银叶大道向辉石殿走去。秋风微凉，银叶白杨的叶片在阳光下折射出碎银般的光芒——这是今学期最后几周难得的晴天。</p>
+        <p>辉石殿的走廊里，彩色玻璃窗将光斑投射在青石地板上，随着云朵的移动缓缓漂移。几位同学正三三两两地走进教室，低声交谈着什么。</p>
+      </div>
+
+      <div class="dlg">
+        <div class="dw"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="3.5" r="2" stroke="#C9A84C" stroke-width=".8"/><path d="M1 9.5Q1 7 5 7Q9 7 9 9.5" stroke="#C9A84C" stroke-width=".8" stroke-linecap="round"/></svg>维斯塔教授</div>
+        <div class="dt">「本周的治愈术课程将重点练习外伤封合术式。」<em>她停顿了一下，目光扫过教室。</em>「请记住，治愈术的精准度建立在对生命构造的深刻理解之上，而非单纯的魔力输出。」</div>
+      </div>
+
+      <div class="evc">
+        <svg viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#C9A84C" stroke-width=".9"/><path d="M13 7v6l3.5 2" stroke="#C9A84C" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><div class="et">课堂随机事件 · 教授提问</div><div class="ed">维斯塔教授点名让你回答「治愈术的禁忌症状」。这将影响本课程的平时分。</div></div>
+      </div>
+
+      <div class="ndiv"><span>· · ·</span></div>
+
+      <div class="nb"><p>你翻开记满密密麻麻笔记的课本，试图在教授点到你之前回忆起上周的内容。感知属性正在帮助你察觉教授目光移动的规律……</p></div>
+    </div>
+
+    <div id="abar">
+      <div class="actx" id="actx">当前情境：上午 · 治愈术理论与实践课堂 · 教授提问触发</div>
+      <div class="abtns" id="abtns">
+        <button class="abtn pri" onclick="act('answer_correct')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 8L8.5 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>自信回答<span class="hk">1</span></button>
+        <button class="abtn" onclick="act('answer_partial')">尝试作答（不确定）<span class="hk">2</span></button>
+        <button class="abtn" onclick="act('observe')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="2" stroke="currentColor" stroke-width=".8"/><circle cx="5" cy="5" r=".8" fill="currentColor"/><path d="M1 5Q2.5 2.5 5 2.5Q7.5 2.5 9 5Q7.5 7.5 5 7.5Q2.5 7.5 1 5" stroke="currentColor" stroke-width=".8"/></svg>察言观色（感知判定）<span class="hk">3</span></button>
+        <button class="abtn dng" onclick="act('skip_answer')">支吾过去<span class="hk">4</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="rp" class="panel">
+    <div class="phead">
+      <span class="phead-t">角色状态</span>
+      <button class="col-btn" id="rp-btn" onclick="colPanel('rp','rp-btn','▷','◁')">▷</button>
+    </div>
+    <div class="pbody">
+      <div class="ps">
+        <div class="psl">生命 · 魔力 · 体力</div>
+        <div class="sr"><div class="sl"><span>HP 生命值</span><span class="sv" id="hp-v">85/100</span></div><div class="sbg"><div class="sf hp" id="hp-f" style="width:85%"></div></div></div>
+        <div class="sr"><div class="sl"><span>MP 魔法值</span><span class="sv" id="mp-v">62/80</span></div><div class="sbg"><div class="sf mp" id="mp-f" style="width:77.5%"></div></div></div>
+        <div class="sr"><div class="sl"><span>SP 体力值</span><span class="sv" id="sp-v">40/60</span></div><div class="sbg"><div class="sf sp" id="sp-f" style="width:66.7%"></div></div></div>
+      </div>
+      <div class="gdiv"></div>
+      <div class="ps">
+        <div class="psl">能力值</div>
+        <div class="ag">
+          <div class="ac"><div class="an">智力</div><div class="av up">12</div></div>
+          <div class="ac"><div class="an">法力</div><div class="av up">13</div></div>
+          <div class="ac"><div class="an">体魄</div><div class="av dn">9</div></div>
+          <div class="ac"><div class="an">魅力</div><div class="av">10</div></div>
+          <div class="ac"><div class="an">感知</div><div class="av up">12</div></div>
+          <div class="ac" style="display:flex;align-items:center;justify-content:center;"><div class="an" style="font-size:8px;">精灵族</div></div>
+        </div>
+      </div>
+      <div class="gdiv"></div>
+      <div class="ps">
+        <div class="psl">隐藏状态</div>
+        <div class="hs"><span class="hs-n">曦光声望</span><span class="hs-v">●●●○○</span></div>
+        <div class="hs"><span class="hs-n">违纪记录</span><span class="hs-v" style="color:var(--ok)" id="hs-viol">0 次</span></div>
+        <div class="hs"><span class="hs-n">失控风险</span><span class="hs-v" style="color:var(--ok)">低</span></div>
+      </div>
+      <div class="gdiv"></div>
+      <div class="ps">
+        <div class="psl">当前任务</div>
+        <div class="ti"><div class="td"></div><div class="tt">参加「治愈术理论与实践」（3/5课时）</div></div>
+        <div class="ti"><div class="td done"></div><div class="tt">了解星辰祭的基本情况</div></div>
+        <div class="ti"><div class="td"></div><div class="tt">与同学进行至少一次对话</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MOBILE BOTTOM NAV ===== -->
+<nav id="mnav">
+  <div class="mnav-inner">
+    <button class="mnav-btn active" id="mn-story" onclick="openMTab('story')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h10M5 10h7M5 13h5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+      <span>故事</span>
+    </button>
+    <button class="mnav-btn" id="mn-sched" onclick="openMTab('sched')">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="16" height="14" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M2 8h16" stroke="currentColor" stroke-width=".9"/><path d="M7 2v3M13 2v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><rect x="5" y="11" width="3" height="2.5" rx=".4" fill="currentColor" opacity=".5"/><rect x="12" y="11" width="3" height="2.5" rx=".4" fill="currentColor" opacity=".5"/></svg>
+      <span>行程</span>
+    </button>
+    <button class="mnav-btn" id="mn-char" onclick="openMTab('char')">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M3 18Q3 13 10 13Q17 13 17 18" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span>角色</span>
+    </button>
+    <button class="mnav-btn" id="mn-set" onclick="openMTab('set')">
+      <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span>设置</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== MOBILE: 行程 ===== -->
+<div class="mm" id="mm-sched">
+  <div class="mm-head">
+    <button class="mm-back" onclick="closeMM('mm-sched')"><svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="mm-title">行程 &amp; 地点</div>
+  </div>
+  <div class="mm-body">
+    <div class="psl">今日课程</div>
+    <div class="si done"><div class="si-bar"></div><div class="si-bd"><div class="si-t">清晨</div><div class="si-n">自由时间</div></div></div>
+    <div class="si curr"><div class="si-bar"></div><div class="si-bd"><div class="si-t">上午 · 进行中</div><div class="si-n">治愈术理论与实践</div><div class="si-d">曦光学部 · 主修</div></div></div>
+    <div class="si up"><div class="si-bar"></div><div class="si-bd"><div class="si-t">下午</div><div class="si-n">魔法史通论</div><div class="si-d">通选课</div></div></div>
+    <div class="si"><div class="si-bar"></div><div class="si-bd"><div class="si-t">傍晚</div><div class="si-n">自由时间</div></div></div>
+    <div class="si"><div class="si-bar"></div><div class="si-bd"><div class="si-t">夜间</div><div class="si-n">就寝</div></div></div>
+    <div class="gdiv" style="margin:12px 0;"></div>
+    <div class="psl">当前地点</div>
+    <div class="loc-c" style="margin-bottom:14px;">
+      <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="13" rx="1.5" stroke="#C9A84C" stroke-width=".9"/><path d="M2 8h16" stroke="#C9A84C" stroke-width=".7"/><path d="M7 4V2M13 4V2" stroke="#C9A84C" stroke-width=".9" stroke-linecap="round"/><rect x="6" y="11" width="3" height="3" rx=".4" fill="#C9A84C" opacity=".4"/></svg>
+      <div><div class="loc-n">辉石殿 · 3层</div><div class="loc-d">曦光学部</div></div>
+    </div>
+    <div class="psl">快捷行动</div>
+    <button class="qa" style="width:100%;margin-bottom:6px;" onclick="qa('map');closeMM('mm-sched')"><svg viewBox="0 0 11 11" fill="none"><rect x="1" y="1" width="9" height="9" rx="1" stroke="currentColor" stroke-width=".8"/><path d="M4 1v9M7 3v5" stroke="currentColor" stroke-width=".8"/></svg>前往其他地点</button>
+    <button class="qa" style="width:100%;" onclick="act('rest');closeMM('mm-sched')"><svg viewBox="0 0 11 11" fill="none"><path d="M1 7h9v1.5Q10 9 9.5 9H1.5Q1 9 1 8.5Z" stroke="currentColor" stroke-width=".8"/><path d="M2 7V5.5Q2 3.5 3.5 3.5H7.5Q9 3.5 9 5.5V7" stroke="currentColor" stroke-width=".8"/></svg>小憩恢复 SP</button>
+  </div>
+</div>
+
+<!-- ===== MOBILE: 角色 ===== -->
+<div class="mm" id="mm-char">
+  <div class="mm-head">
+    <button class="mm-back" onclick="closeMM('mm-char')"><svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="mm-title">角色状态</div>
+  </div>
+  <div class="mm-body">
+    <div class="psl">艾琳·薇拉 · 精灵 · 曦光学部</div>
+    <div class="sr" style="margin-bottom:9px;"><div class="sl"><span>HP 生命值</span><span class="sv">85/100</span></div><div class="sbg" style="height:6px;"><div class="sf hp" style="width:85%"></div></div></div>
+    <div class="sr" style="margin-bottom:9px;"><div class="sl"><span>MP 魔法值</span><span class="sv">62/80</span></div><div class="sbg" style="height:6px;"><div class="sf mp" style="width:77.5%"></div></div></div>
+    <div class="sr" style="margin-bottom:9px;"><div class="sl"><span>SP 体力值</span><span class="sv">40/60</span></div><div class="sbg" style="height:6px;"><div class="sf sp" style="width:66.7%"></div></div></div>
+    <div class="gdiv" style="margin:12px 0;"></div>
+    <div class="psl">能力值</div>
+    <div class="ag" style="grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
+      <div class="ac"><div class="an">智力</div><div class="av up">12</div></div>
+      <div class="ac"><div class="an">法力</div><div class="av up">13</div></div>
+      <div class="ac"><div class="an">体魄</div><div class="av dn">9</div></div>
+      <div class="ac"><div class="an">魅力</div><div class="av">10</div></div>
+      <div class="ac"><div class="an">感知</div><div class="av up">12</div></div>
+      <div class="ac"><div class="an">种族</div><div class="an" style="font-size:9px;margin:0;">精灵</div></div>
+    </div>
+    <div class="gdiv" style="margin:12px 0;"></div>
+    <div class="psl">隐藏状态</div>
+    <div class="hs"><span class="hs-n">曦光声望</span><span class="hs-v">●●●○○</span></div>
+    <div class="hs"><span class="hs-n">违纪记录</span><span class="hs-v" style="color:var(--ok)">0 次</span></div>
+    <div class="hs"><span class="hs-n">失控风险</span><span class="hs-v" style="color:var(--ok)">低</span></div>
+    <div class="gdiv" style="margin:12px 0;"></div>
+    <div class="psl">当前任务</div>
+    <div class="ti"><div class="td"></div><div class="tt">参加「治愈术理论与实践」（3/5课时）</div></div>
+    <div class="ti"><div class="td done"></div><div class="tt">了解星辰祭的基本情况</div></div>
+    <div class="ti"><div class="td"></div><div class="tt">与同学进行至少一次对话</div></div>
+  </div>
+</div>
+
+<!-- ===== MOBILE: 设置 ===== -->
+<div class="mm" id="mm-set">
+  <div class="mm-head">
+    <button class="mm-back" onclick="closeMM('mm-set')"><svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="mm-title">界面设置</div>
+  </div>
+  <div class="mm-body">
+    <div class="psl">主题颜色</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+      <button onclick="setTheme('pink');closeMM('mm-set')" style="padding:14px 10px;border-radius:7px;border:1px solid var(--bd);background:var(--bg);display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx);cursor:pointer;"><div style="width:16px;height:16px;border-radius:50%;background:#DFA8B8;flex-shrink:0;"></div>粉金白</button>
+      <button onclick="setTheme('dark');closeMM('mm-set')" style="padding:14px 10px;border-radius:7px;border:1px solid var(--bd);background:var(--bg);display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx);cursor:pointer;"><div style="width:16px;height:16px;border-radius:50%;background:#1E1220;border:1px solid #4A2A40;flex-shrink:0;"></div>粉金黑</button>
+      <button onclick="setTheme('blue');closeMM('mm-set')" style="padding:14px 10px;border-radius:7px;border:1px solid var(--bd);background:var(--bg);display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx);cursor:pointer;"><div style="width:16px;height:16px;border-radius:50%;background:#A8C0D6;flex-shrink:0;"></div>蓝金白</button>
+      <button onclick="setTheme('warm');closeMM('mm-set')" style="padding:14px 10px;border-radius:7px;border:1px solid var(--bd);background:var(--bg);display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx);cursor:pointer;"><div style="width:16px;height:16px;border-radius:50%;background:#E8C5C5;flex-shrink:0;"></div>暖棕金白</button>
+    </div>
+    <div class="psl">货币</div>
+    <div class="hs"><span class="hs-n">金币 Aurum</span><span class="hs-v" id="mob-gold">128</span></div>
+    <div class="hs"><span class="hs-n">魔力水晶 Crystallum</span><span class="hs-v" style="color:var(--mp)">3</span></div>
+    <div class="gdiv" style="margin:14px 0;"></div>
+    <button style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--gb);background:var(--ac);color:var(--gold);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;">导出存档</button>
+  </div>
+</div>
+
+<!-- ===== CALENDAR MODAL ===== -->
+<div class="mo" id="cal-mo" onclick="closeCal(event)">
+  <div class="mb">
+    <button class="mc-btn" onclick="closeCal(null,1)">✕</button>
+    <div class="mt-m">课程表 · 秋季学期 第3周</div>
+    <div class="ms-m">第3周 / 共16周 · 星期二 · 上午（当前）</div>
+    <div>
+      <div class="cal-hr"><div></div><div class="cal-dh">周一</div><div class="cal-dh">周二 ●</div><div class="cal-dh">周三</div><div class="cal-dh">周四</div><div class="cal-dh">周五</div></div>
+      <div class="cal-r"><div class="cal-tl">清晨</div><div class="cal-c free">自由</div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">光幕构造学</div><div class="cd">曦光·主修</div></div><div class="cal-c free">自由</div><div class="cal-c free">自由</div></div>
+      <div class="cal-r"><div class="cal-tl">上午</div><div class="cal-c has"><div class="cn">治愈术理论</div><div class="cd">曦光·主修</div></div><div class="cal-c now has"><div class="cn">治愈术理论 ▶</div><div class="cd">曦光·主修</div></div><div class="cal-c has"><div class="cn">净化仪式学</div><div class="cd">曦光·主修</div></div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">圣辉基础</div><div class="cd">曦光·主修</div></div></div>
+      <div class="cal-r"><div class="cal-tl">下午</div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">魔法史通论</div><div class="cd">通选课</div></div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">跨族文化研究</div><div class="cd">通选课</div></div><div class="cal-c free">自由</div></div>
+      <div class="cal-r"><div class="cal-tl">傍晚</div><div class="cal-c free">自由</div><div class="cal-c free">自由</div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">银羽辩论社</div><div class="cd">社团活动</div></div><div class="cal-c free">自由</div></div>
+      <div class="cal-r"><div class="cal-tl">夜间</div><div class="cal-c free">就寝</div><div class="cal-c free">就寝</div><div class="cal-c free">就寝</div><div class="cal-c free">就寝</div><div class="cal-c has"><div class="cn">自习/社交</div><div class="cd">自由</div></div></div>
+    </div>
+    <div style="margin-top:10px;font-size:9px;color:var(--tx3);">第8周：期中考试 &nbsp;·&nbsp; 第16周：期末考试</div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+const PERIODS = ['清晨','上午','下午','傍晚','夜间'];
+const DAYS    = ['星期一','星期二','星期三','星期四','星期五'];
+const SEMS    = ['秋季学期','冬季学期','春季学期','夏季学期'];
+const SHORTDAY= ['一','二','三','四','五'];
+
+const G = {
+  sem:0, week:3, day:1, period:1,
+  hp:85, hpMax:100, mp:62, mpMax:80, sp:40, spMax:60,
+  gold:128, crystal:3, viol:0, loc:'辉石殿 · 3层'
+};
+
+/* ============================================================
+   ACTION BANK
+   ============================================================ */
+const A = {
+  answer_correct:  { n:['你镇定地站起身，列举治愈术禁忌症状——「开放性骨折合并大面积魔力灼伤时，应先行净化再治愈，否则可能导致魔力错乱。」','维斯塔教授微微点头，眼中有一丝不易察觉的赞许。「正确。请坐。」'], e:['回答正确！','平时分 +1，与维斯塔教授好感度 +2。'], nx:'class', mp:0 },
+  answer_partial:  { n:['你说出了两个禁忌症状，第三个卡壳了。维斯塔教授等待了几秒，然后补充完了答案。','「有所了解，但还需加强记忆。」她的语气不温不火。'], e:['部分正确。','平时分 +0.5。'], nx:'class', mp:0 },
+  observe:         { n:['你运用感知能力，察觉教授目光已扫过你的方向，下一个提问对象或许是右侧的同学——','果然，维斯塔教授转向了坐在你右侧的矮人同学。你悄悄松了口气。'], e:['感知判定成功！','规避提问。感知经验 +0.2，MP -3。'], nx:'class', mp:3 },
+  skip_answer:     { n:['「呃……是……失血过多的情况下……」你支支吾吾，思路一片空白。','「坐下，课后来找我补课。」一股社死的寒意从脊背蔓延开来。'], e:['回答失败。','平时分 -0.5，被要求补课。'], nx:'class', mp:0 },
+  take_notes:      { n:['你专心听讲，笔尖快速划过笔记本。一节课下来，填满了整整两页。'], e:['认真听讲！','智力经验 +0.3，法力经验 +0.2，出勤 +1，MP -5。'], nx:'class', mp:5 },
+  ask_question:    { n:['「教授，先天魔力不稳定的患者，净化步骤是否需要更长时间？」','维斯塔教授停顿了一下。「这是个好问题。理论上需要延长约30%的净化时间。」'], e:['主动提问！','好感度 +3，平时分 +0.5，智力 +0.1。'], nx:'class', mp:3 },
+  chat_classmate:  { n:['你悄悄凑近旁边的同学，用气声问：「上次笔记整理了吗？」','她快速递过来一张纸条：「整理了，课后给你。」维斯塔教授的目光扫了一下，你们同时低下头。'], e:['与同学互动。','好感度 +2，被注意但忽视。'], nx:'class', mp:1 },
+  rest:            { n:['你找了一处石凳坐下，闭目休息片刻。银叶大道的风声混合着远处的铸炉声，意外地让人心神安定。'], e:['小憩完成。','SP +10，消耗约30分钟。'], nx:'free', sp:10 },
+  skip_class:      { custom: true }
+};
+
+/* skip_class custom logic */
+A.skip_class.exec = function() {
+  addDiv();
+  const caught = Math.random() < 0.20;
+  if (caught) {
+    pushNarr(['趁着维斯塔教授转身写字，你悄悄向后门移动……','「艾琳同学，请问你要去哪里？」教授的声音清晰地穿越了整间教室。你僵在原地，情光（精灵紧张时的皮肤发光）彻底背叛了你。']);
+    pushEvt('被发现！（精灵基础概率20%）','违纪记录 +1，强制返回座位。');
+    G.viol++;
+    renderAll();
+    setTimeout(() => setBtns('class'), 200);
+  } else {
+    pushNarr(['走廊里空无一人，阳光懒散地铺在青石地板上。你成功溜出来了——银叶大道的风吹散了课堂的紧张感。']);
+    pushEvt('翘课成功。','上午可自由活动，出勤 -1（影响平时分）。');
+    G.loc = '银叶大道';
+    const lel = document.getElementById('lp-loc');
+    if (lel) lel.textContent = G.loc;
+    renderAll();
+    setTimeout(() => setBtns('free'), 200);
+  }
+};
+
+/* ============================================================
+   DOM HELPERS
+   ============================================================ */
+const area = () => document.getElementById('narrative');
+
+function addDiv() {
+  const d = document.createElement('div');
+  d.className = 'ndiv'; d.innerHTML = '<span>· · ·</span>';
+  area().appendChild(d);
+}
+function pushNarr(ps) {
+  const b = document.createElement('div');
+  b.className = 'nb';
+  b.innerHTML = ps.map(p=>`<p>${p}</p>`).join('');
+  area().appendChild(b);
+  setTimeout(()=>b.scrollIntoView({behavior:'smooth',block:'end'}),50);
+}
+function pushEvt(title, desc) {
+  const c = document.createElement('div');
+  c.className = 'evc';
+  c.innerHTML = `<svg viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="10" stroke="#C9A84C" stroke-width=".9"/><path d="M13 8l.8 2.5H16L14 12l.8 2.5L13 13l-1.8 1.5.8-2.5-2-1.2h2.2Z" fill="#C9A84C"/></svg><div><div class="et">${title}</div><div class="ed">${desc}</div></div>`;
+  area().appendChild(c);
+  setTimeout(()=>c.scrollIntoView({behavior:'smooth',block:'end'}),80);
+}
+function pushBanner() {
+  const b = document.createElement('div');
+  b.className = 'tbanner';
+  b.innerHTML = `<svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#C9A84C" stroke-width="1.1"/><path d="M9 5.5v4l2.5 1.5" stroke="#C9A84C" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bt">${PERIODS[G.period]} · ${SEMS[G.sem]} 第${G.week}周 ${DAYS[G.day]}</div><div class="bs">${schedDesc()}</div></div>`;
+  area().appendChild(b);
+  setTimeout(()=>b.scrollIntoView({behavior:'smooth',block:'start'}),50);
+}
+
+function schedDesc() {
+  const m=[['自由时间',''],['治愈术理论与实践','曦光学部主修'],['魔法史通论','通选课'],['自由时间',''],['就寝时间','']];
+  const [n,d]=m[G.period]||['—',''];
+  return d ? `课程：${n}（${d}）` : `时间段：${n}`;
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function g(id){ return document.getElementById(id); }
+function setText(id,v){ const el=g(id); if(el) el.textContent=v; }
+function setBar(nm,v,mx) {
+  const p = Math.round(v/mx*100);
+  setText(`${nm}-v`,`${v}/${mx}`);
+  const f=g(`${nm}-f`); if(f) f.style.width=p+'%';
+}
+
+function renderAll() {
+  const ds = `${SEMS[G.sem]} · 第${G.week}周 · ${DAYS[G.day]}`;
+  const ps = PERIODS[G.period];
+  setText('tb-date', ds);
+  setText('tb-pname', ps);
+  setText('tb-ptag', ps);
+  setText('mtb-date', `${SEMS[G.sem].slice(0,2)}·第${G.week}周·周${SHORTDAY[G.day]}`);
+  setText('mtb-per', ps);
+  setText('bt', `${ps} · ${SEMS[G.sem]} 第${G.week}周 ${DAYS[G.day]}`);
+  setText('bs', schedDesc());
+  setText('tb-gold', G.gold);
+  setText('tb-crystal', G.crystal);
+  setText('mob-gold', G.gold);
+  setBar('hp', G.hp, G.hpMax);
+  setBar('mp', G.mp, G.mpMax);
+  setBar('sp', G.sp, G.spMax);
+  setText('hs-viol', `${G.viol} 次`);
+  const vEl = g('hs-viol');
+  if (vEl) vEl.style.color = G.viol > 0 ? 'var(--ng)' : 'var(--ok)';
+  // Pips
+  const pips = document.querySelectorAll('#tb-pips .pip');
+  pips.forEach((p,i)=>{ p.className='pip '+(i<G.period?'done':i===G.period?'curr':'fut'); });
+}
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+function act(id) {
+  const a = A[id];
+  if (!a) return;
+  if (a.custom) { if(a.exec) a.exec(); return; }
+  addDiv();
+  pushNarr(a.n);
+  pushEvt(a.e[0], a.e[1]);
+  if (a.mp) G.mp = Math.max(0, G.mp - a.mp);
+  if (a.sp) G.sp = Math.min(G.spMax, G.sp + a.sp);
+  renderAll();
+  setTimeout(() => setBtns(a.nx || 'class'), 200);
+}
+
+function setBtns(type) {
+  const ctx = g('actx'), btns = g('abtns');
+  if (type === 'class') {
+    ctx.textContent = `当前情境：${PERIODS[G.period]} · 治愈术理论与实践课堂 · 课程进行中`;
+    btns.innerHTML = `
+      <button class="abtn pri" onclick="act('take_notes')">认真听课做笔记<span class="hk">1</span></button>
+      <button class="abtn" onclick="act('ask_question')">向教授提问<span class="hk">2</span></button>
+      <button class="abtn" onclick="act('chat_classmate')">与同学低声聊天<span class="hk">3</span></button>
+      <button class="abtn dng" onclick="act('skip_class')">偷偷离开教室<span class="hk">4</span></button>`;
+  } else {
+    ctx.textContent = `当前情境：${PERIODS[G.period]} · ${G.loc} · 自由时间`;
+    btns.innerHTML = `
+      <button class="abtn pri" onclick="advTime()">推进到下一时间段<span class="hk">↵</span></button>
+      <button class="abtn" onclick="act('rest')">小憩 (SP+10)<span class="hk">2</span></button>
+      <button class="abtn" onclick="qa('explore')">探索当前地点<span class="hk">3</span></button>
+      <button class="abtn" onclick="qa('npc')">寻找附近学生<span class="hk">4</span></button>`;
+  }
+}
+
+/* ============================================================
+   TIME
+   ============================================================ */
+const ptxt = {
+  0: '清晨的薄雾尚未散去，学院里只有晨练的战阵学部学子的脚步声。银脊山脉的风带着清冽的气息吹来。',
+  2: '下午的阳光偏斜，辉石殿走廊的彩色光斑移到了墙壁另一侧。课间的喧嚣与片刻宁静交替流淌过去。',
+  3: '傍晚时分，晖湖畔花园里飘来花草的气息。银叶大道上三三两两的学子在散步，社团活动的招牌吸引着人群。',
+};
+
+function advTime() {
+  G.period++;
+  if (G.period >= 5) {
+    G.period = 0; G.day++;
+    if (G.day >= 5) { G.day = 0; G.week++; }
+    if (G.week > 16) { G.week = 1; G.sem = (G.sem+1)%4; }
+    G.sp = G.spMax; G.mp = G.mpMax; G.hp = G.hpMax;
+  }
+  renderAll();
+  addDiv();
+  pushBanner();
+  const isClass = (G.period === 1 && G.day === 1);
+  if (G.period === 4) {
+    pushNarr(['夜深了，你回到宿舍「晨露阁」，洗漱后躺上床铺。窗外月光将银叶白杨的影子拉得细长。','翌日又是新的开始。（HP/MP/SP 全额恢复）']);
+    pushEvt('就寝完成。','进入明天。');
+    setTimeout(()=>setBtns('free'),300);
+  } else if (isClass) {
+    pushNarr(['上午的课程时间又到了。辉石殿教室里，同学们陆续就座，维斯塔教授已站在讲台前。']);
+    setBtns('class');
+  } else {
+    pushNarr([ptxt[G.period] || '时间悄然流逝……']);
+    setBtns('free');
+  }
+}
+
+/* ============================================================
+   PANEL / MODAL HELPERS
+   ============================================================ */
+function colPanel(pid, bid, openChr, closedChr) {
+  const p = g(pid), b = g(bid);
+  p.classList.toggle('col');
+  b.textContent = p.classList.contains('col') ? closedChr : openChr;
+}
+function openCal()  { g('cal-mo').classList.add('open'); }
+function closeCal(e,f) { if(f||(e&&e.target.id==='cal-mo')) g('cal-mo').classList.remove('open'); }
+function toggleNfp() {
+  g('nfp').classList.toggle('open');
+  g('ndot').style.display='none';
+}
+document.addEventListener('click', e=>{
+  const nfp=g('nfp');
+  if(nfp.classList.contains('open')&&!nfp.contains(e.target)&&!e.target.closest('.icon-btn'))
+    nfp.classList.remove('open');
+});
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+function openMTab(tab) {
+  document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mm').forEach(m=>m.classList.remove('open'));
+  const map={story:'mn-story',sched:'mn-sched',char:'mn-char',set:'mn-set'};
+  const mm={sched:'mm-sched',char:'mm-char',set:'mm-set'};
+  if(map[tab]) g(map[tab]).classList.add('active');
+  if(mm[tab])  g(mm[tab]).classList.add('open');
+}
+function closeMM(id) {
+  g(id).classList.remove('open');
+  document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
+  g('mn-story').classList.add('active');
+}
+
+/* ============================================================
+   THEME
+   ============================================================ */
+function setTheme(t, el) {
+  document.body.setAttribute('data-theme', t);
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else { const b=document.querySelector(`.tbtn.t-${t}`); if(b) b.classList.add('active'); }
+  try { localStorage.setItem('ethael-theme', t); } catch(e){}
+}
+
+/* ============================================================
+   QUICK ACTIONS
+   ============================================================ */
+function qa(type) {
+  addDiv();
+  const m={map:'（地图系统将在后续版本开放）',npc:'（NPC互动系统将在P1阶段展开）',bag:'（背包系统将在P2阶段开放）',explore:'你在'+G.loc+'附近漫步，留意着每一处细节……'};
+  pushNarr([m[type]||'（功能开发中）']);
+}
+
+/* ============================================================
+   KEYBOARD
+   ============================================================ */
+document.addEventListener('keydown', e=>{
+  if(['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  const btns = document.querySelectorAll('#abtns .abtn');
+  const map={'1':0,'2':1,'3':2,'4':3};
+  if(e.key in map && btns[map[e.key]]) { btns[map[e.key]].click(); return; }
+  if(e.key==='Escape') {
+    document.querySelectorAll('.mo.open').forEach(m=>m.classList.remove('open'));
+    document.querySelectorAll('.mm.open').forEach(m=>{ const id=m.id; closeMM(id); });
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function(){
+  let t='pink';
+  try { t=localStorage.getItem('ethael-theme')||'pink'; } catch(e){}
+  setTheme(t);
+  renderAll();
+})();
+</script>
+</body>
+</html>
