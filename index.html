@@ -397,6 +397,12 @@ button { font-family: inherit; cursor: pointer; }
 .mm-body { flex:1; overflow-y:auto; padding:14px 16px; }
 
 /* ============================================================
+   SAVE TOAST
+   ============================================================ */
+#save-toast { position:fixed; bottom:72px; left:50%; transform:translateX(-50%) translateY(10px); background:var(--bg2); border:1px solid var(--gb2); color:var(--gold); font-family:'Cinzel','Palatino Linotype',Georgia,serif; font-size:10px; padding:7px 18px; border-radius:20px; z-index:600; opacity:0; transition:opacity .22s,transform .22s; pointer-events:none; letter-spacing:.08em; box-shadow:0 4px 18px var(--sh2); white-space:nowrap; }
+#save-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
@@ -491,6 +497,9 @@ button { font-family: inherit; cursor: pointer; }
   <div class="tb-right">
     <button class="icon-btn" onclick="openCal()" title="课程表">
       <svg viewBox="0 0 13 13" fill="none"><rect x="1.5" y="2" width="10" height="9.5" rx="1.5" stroke="currentColor" stroke-width=".9"/><path d="M4.5 1v2M8.5 1v2" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/><path d="M1.5 5h10" stroke="currentColor" stroke-width=".7"/><rect x="3.5" y="6.5" width="2" height="1.5" rx=".3" fill="currentColor" opacity=".5"/><rect x="7.5" y="6.5" width="2" height="1.5" rx=".3" fill="currentColor" opacity=".5"/></svg>
+    </button>
+    <button class="icon-btn" onclick="openSaveMo()" title="存档 / 读档">
+      <svg viewBox="0 0 13 13" fill="none"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width=".9"/><rect x="3.5" y="1.5" width="6" height="3.5" rx=".5" fill="currentColor" opacity=".25"/><rect x="3.5" y="7" width="6" height="4" rx=".5" stroke="currentColor" stroke-width=".8"/><rect x="5" y="8" width="3" height="2" rx=".3" fill="currentColor" opacity=".35"/></svg>
     </button>
     <button class="icon-btn" onclick="toggleNfp()" title="通知">
       <div class="ndot" id="ndot"></div>
@@ -732,7 +741,10 @@ button { font-family: inherit; cursor: pointer; }
     <div class="hs"><span class="hs-n">金币 Aurum</span><span class="hs-v" id="mob-gold">128</span></div>
     <div class="hs"><span class="hs-n">魔力水晶 Crystallum</span><span class="hs-v" style="color:var(--mp)">3</span></div>
     <div class="gdiv" style="margin:14px 0;"></div>
-    <button style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--gb);background:var(--ac);color:var(--gold);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;">导出存档</button>
+    <div class="psl" style="margin-top:14px;">存档</div>
+    <button onclick="manualSave();updateSaveInfo()" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;font-weight:500;margin-bottom:7px;">保存当前进度</button>
+    <button onclick="openSaveMo();closeMM('mm-set')" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;margin-bottom:7px;">读取 / 导出 / 导入存档</button>
+    <button onclick="exportSave()" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;">导出存档文件 (.json)</button>
   </div>
 </div>
 
@@ -744,6 +756,24 @@ button { font-family: inherit; cursor: pointer; }
     <div class="mt-m">地图 · 伊瑟尔学院</div>
     <div class="ms-m" id="map-cur-loc">当前位置：梦蝶楼</div>
     <div id="map-content" style="max-height:58vh;overflow-y:auto;padding-right:4px;"></div>
+  </div>
+</div>
+
+<!-- ===== SAVE MODAL ===== -->
+<div class="mo" id="save-mo" onclick="closeSaveMo(event)">
+  <div class="mb" style="max-width:360px;">
+    <button class="mc-btn" onclick="closeSaveMo(null,1)">✕</button>
+    <div class="mt-m">存档 · Archive</div>
+    <div class="ms-m">游戏进度保存在本设备浏览器中</div>
+    <div id="save-info"></div>
+    <div style="display:grid;gap:7px;">
+      <button onclick="manualSave();updateSaveInfo()" style="padding:9px;border-radius:5px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;font-weight:500;">保存当前进度</button>
+      <button onclick="doLoadSave()" style="padding:9px;border-radius:5px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">读取存档</button>
+      <div style="height:1px;background:linear-gradient(90deg,transparent,var(--gb2),transparent);margin:2px 0;"></div>
+      <button onclick="exportSave()" style="padding:9px;border-radius:5px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">导出存档文件 (.json)</button>
+      <button onclick="triggerImport()" style="padding:9px;border-radius:5px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">导入存档文件</button>
+      <input type="file" id="save-file-input" accept=".json" style="display:none" onchange="importSave(event)">
+    </div>
   </div>
 </div>
 
@@ -1297,6 +1327,7 @@ function act(id) {
   if (a.mp) G.mp = Math.max(0, G.mp - a.mp);
   if (a.sp) G.sp = Math.min(G.spMax, G.sp + a.sp);
   renderAll();
+  autoSave();
   setTimeout(() => setBtns(a.nx || 'class'), 200);
 }
 
@@ -1341,6 +1372,7 @@ function advTime() {
     G.loc = DEPTS[CHAR.dept].dorm;
   }
   renderAll();
+  autoSave();
   renderCalendar();
   addDiv();
   pushBanner();
@@ -1361,6 +1393,171 @@ function advTime() {
     pushNarr([txt ? txt() : '时间悄然流逝……']);
     setBtns('free');
   }
+}
+
+/* ============================================================
+   SAVE SYSTEM 存档系统
+   ============================================================ */
+const SAVE_KEY = 'ethael-save-v1';
+
+function buildSaveData() {
+  return {
+    version: 1,
+    timestamp: Date.now(),
+    state: {
+      sem: G.sem, week: G.week, day: G.day, period: G.period,
+      hp: G.hp, hpMax: G.hpMax,
+      mp: G.mp, mpMax: G.mpMax,
+      sp: G.sp, spMax: G.spMax,
+      gold: G.gold, crystal: G.crystal, viol: G.viol,
+      loc: G.loc, locKey: G.locKey,
+      stats: { ...G.stats },
+      repute: { ...G.repute },
+      attendance: { ...G.attendance },
+    }
+  };
+}
+
+function autoSave() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(buildSaveData())); } catch(e) {}
+}
+
+function manualSave() {
+  autoSave();
+  showToast('存档已保存 ✦');
+}
+
+function getSaveInfo() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    return data ? data.timestamp : null;
+  } catch(e) { return null; }
+}
+
+function updateSaveInfo() {
+  const el = g('save-info');
+  if (!el) return;
+  const ts = getSaveInfo();
+  if (ts) {
+    const d = new Date(ts);
+    const fmt = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    el.innerHTML = `<div style="font-size:9px;color:var(--tx3);margin-bottom:12px;padding:6px 9px;background:var(--bg3);border-radius:4px;border:1px solid var(--bd);">上次存档：${fmt}</div>`;
+  } else {
+    el.innerHTML = `<div style="font-size:9px;color:var(--tx3);margin-bottom:12px;padding:6px 9px;background:var(--bg3);border-radius:4px;border:1px solid var(--bd);">暂无存档记录</div>`;
+  }
+}
+
+function applyLoadedState(s) {
+  if (s.sem !== undefined)  G.sem  = s.sem;
+  if (s.week !== undefined) G.week = s.week;
+  if (s.day !== undefined)  G.day  = s.day;
+  if (s.period !== undefined) G.period = s.period;
+  if (s.hp !== undefined)   G.hp   = s.hp;
+  if (s.hpMax !== undefined)G.hpMax= s.hpMax;
+  if (s.mp !== undefined)   G.mp   = s.mp;
+  if (s.mpMax !== undefined)G.mpMax= s.mpMax;
+  if (s.sp !== undefined)   G.sp   = s.sp;
+  if (s.spMax !== undefined)G.spMax= s.spMax;
+  if (s.gold !== undefined) G.gold = s.gold;
+  if (s.crystal !== undefined) G.crystal = s.crystal;
+  if (s.viol !== undefined) G.viol = s.viol;
+  if (s.loc !== undefined)  G.loc  = s.loc;
+  if (s.locKey !== undefined) G.locKey = s.locKey;
+  if (s.stats) Object.assign(G.stats, s.stats);
+  if (s.repute) G.repute = { ...s.repute };
+  if (s.attendance) G.attendance = { ...s.attendance };
+}
+
+function loadSaveData() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data || !data.state) return false;
+    applyLoadedState(data.state);
+    return data.timestamp;
+  } catch(e) { return false; }
+}
+
+function doLoadSave() {
+  const ts = loadSaveData();
+  if (ts) {
+    renderAll();
+    renderCalendar();
+    const c = todayCourse();
+    setBtns(c ? 'class' : 'free');
+    showToast('存档已读取 ✦');
+    closeSaveMo(null, 1);
+  } else {
+    showToast('没有找到存档', true);
+  }
+}
+
+function exportSave() {
+  const data = buildSaveData();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const d = new Date().toISOString().slice(0, 10);
+  a.download = `ethael-save-${d}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('存档已导出 ✦');
+}
+
+function triggerImport() {
+  const inp = g('save-file-input');
+  if (inp) inp.click();
+}
+
+function importSave(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data || !data.state) { showToast('存档文件无效', true); return; }
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+      applyLoadedState(data.state);
+      renderAll();
+      renderCalendar();
+      const c = todayCourse();
+      setBtns(c ? 'class' : 'free');
+      showToast('存档已导入 ✦');
+      closeSaveMo(null, 1);
+    } catch(ex) {
+      showToast('存档文件损坏', true);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function openSaveMo() {
+  updateSaveInfo();
+  g('save-mo').classList.add('open');
+}
+function closeSaveMo(e, force) {
+  if (force || (e && e.target.id === 'save-mo'))
+    g('save-mo').classList.remove('open');
+}
+
+let _toastTimer = null;
+function showToast(msg, isErr) {
+  const el = g('save-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isErr ? 'var(--ng)' : 'var(--gold)';
+  el.classList.add('show');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
 /* ============================================================
@@ -1441,6 +1638,7 @@ document.addEventListener('keydown', e=>{
     document.querySelectorAll('.mo.open').forEach(m=>m.classList.remove('open'));
     document.querySelectorAll('.mm.open').forEach(m=>{ const id=m.id; closeMM(id); });
     const mapm = g('map-mo'); if(mapm) mapm.classList.remove('open');
+    const savm = g('save-mo'); if(savm) savm.classList.remove('open');
   }
 });
 
@@ -1451,6 +1649,8 @@ document.addEventListener('keydown', e=>{
   let t='pink';
   try { t=localStorage.getItem('ethael-theme')||'pink'; } catch(e){}
   setTheme(t);
+  // 尝试读取存档，静默恢复状态
+  loadSaveData();
   renderAll();
   renderCalendar();
 
@@ -1467,5 +1667,6 @@ document.addEventListener('keydown', e=>{
   setBtns(c ? 'class' : 'free');
 })();
 </script>
+<div id="save-toast"></div>
 </body>
 </html>
