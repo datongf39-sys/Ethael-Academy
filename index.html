@@ -1074,10 +1074,12 @@ const G = {
   loc: DEPTS[CHAR.dept].dorm,
   locKey: CHAR.dept + '_d',
   stats: { ...CHAR.stats },
+  exp: { int: 0, mag: 0, phy: 0, cha: 0, sen: 0 }, // 属性经验值
   repute: { [CHAR.dept]: 0 },  // 各学部声望 -100~100
   attendance: {},               // 课程出勤率（兼容旧存档）
   courseProgress: {},           // {courseName: {attended,total,regular,examScore,finalScore,grade,makeupScore,makeupDone}}
   examsDone: { midterm: false, final: false },
+  riskLevel: 0, // 失控风险等级 0-100
 };
 
 /* ============================================================
@@ -1214,28 +1216,158 @@ function travelTo(locKey) {
   if (lsub) lsub.textContent = loc.sub;
 }
 
-/* ============================================================
+/* ============================================================  
+   EXPERIENCE & LEVEL UP SYSTEM
+   ============================================================ */
+function addExp(type, amount) {
+  G.exp[type] += amount;
+  // 升级阈值：基础值100，每级增加20%
+  const level = G.stats[type] - 10; // 基础值10
+  const threshold = 100 * Math.pow(1.2, level);
+  
+  if (G.exp[type] >= threshold) {
+    G.stats[type] += 1;
+    G.exp[type] -= threshold;
+    pushEvt(`${type === 'int' ? '智力' : type === 'mag' ? '法力' : type === 'phy' ? '体魄' : type === 'cha' ? '魅力' : '感知'}升级！`, `当前等级：${G.stats[type]}`);
+    // 更新HP/MP/SP最大值
+    updateMaxStats();
+  }
+}
+
+function updateMaxStats() {
+  // 重新计算HP/MP/SP最大值
+  const race = RACES[CHAR.race];
+  G.hpMax = race.hpBase + Math.floor((G.stats.phy - 10) * 2);
+  G.mpMax = race.mpBase + Math.floor((G.stats.mag - 10) * 2);
+  G.spMax = race.spBase + Math.floor((G.stats.phy - 10) * 1);
+  // 确保当前值不超过最大值
+  G.hp = Math.min(G.hp, G.hpMax);
+  G.mp = Math.min(G.mp, G.mpMax);
+  G.sp = Math.min(G.sp, G.spMax);
+}
+
+// S1换算公式
+function calculateS1() {
+  // S1 = (智力 + 法力 + 感知) × 0.6 + (体魄 + 魅力) × 0.4
+  return Math.floor((G.stats.int + G.stats.mag + G.stats.sen) * 0.6 + (G.stats.phy + G.stats.cha) * 0.4);
+}
+
+/* ============================================================  
+   RISK SYSTEM
+   ============================================================ */
+function checkRisk() {
+  // MP耗尽时增加风险
+  if (G.mp <= 0) {
+    G.riskLevel += 20;
+    G.riskLevel = Math.min(G.riskLevel, 100);
+  }
+  
+  // 高强度施法（MP消耗大于20）时增加风险
+  // 这个逻辑会在具体的施法动作中调用
+  
+  // 检查是否触发失控
+  if (G.riskLevel >= 70) {
+    triggerRisk();
+  }
+}
+
+function triggerRisk() {
+  // 计算失控概率
+  let baseChance = 0.3; // 基础30%概率
+  
+  // 种族天赋影响
+  baseChance = applyRaceRiskModifier(baseChance);
+  
+  // 进行判定
+  if (Math.random() < baseChance) {
+    // 触发失控
+    pushEvt('失控！', '你的魔法失去了控制，造成了意外的效果。');
+    // 失控效果：随机减少HP和SP
+    const hpLoss = Math.floor(Math.random() * 15) + 5;
+    const spLoss = Math.floor(Math.random() * 10) + 3;
+    G.hp = Math.max(1, G.hp - hpLoss);
+    G.sp = Math.max(0, G.sp - spLoss);
+  } else {
+    // 成功抵抗失控
+    pushEvt('抵抗成功', '你成功控制住了自己的魔法，避免了失控。');
+  }
+  
+  // 重置风险等级
+  G.riskLevel = 0;
+}
+
+function applyRaceRiskModifier(chance) {
+  // 根据种族天赋调整失控概率
+  switch(CHAR.race) {
+    case 'dwarf':
+      return chance * 0.5; // 矮人抗扰乱减半
+    case 'orc':
+      return chance * 0.6; // 兽人体魄强，降低失控概率
+    case 'dragonborn':
+      return chance * 0.7; // 龙裔魔力控制能力强
+    default:
+      return chance;
+  }
+}
+
+// 高强度施法时调用
+function highIntensityCast(mpCost) {
+  if (mpCost > 20) {
+    G.riskLevel += 15;
+    G.riskLevel = Math.min(G.riskLevel, 100);
+    checkRisk();
+  }
+}
+
+/* ============================================================  
    ACTION BANK
    ============================================================ */
 const A = {
   take_notes: {
     get n() { return [`你专心听讲，笔尖快速划过笔记本。感知值${G.stats.sen}让你精准捕捉到教授的每一个重点。`]; },
-    e:['认真听讲！','智力经验 +0.3，法力经验 +0.2，出勤 +1，MP -5。'], nx:'class', mp:5
+    e:['认真听讲！','智力经验 +0.3，法力经验 +0.2，出勤 +1，MP -5。'], nx:'class', mp:5,
+    exec() {
+      addExp('int', 0.3);
+      addExp('mag', 0.2);
+      const cc = todayCourse();
+      if (cc) {
+        initCourseProgress(cc.name);
+        G.courseProgress[cc.name].attended++;
+        G.courseProgress[cc.name].regular += 0.5;
+      }
+      G.mp -= 5;
+    }
   },
   ask_question: {
     get n() {
       const c = todayCourse();
       return [`「教授，关于${c ? c.name : '这节课'}的内容我有一个疑问——」`,`教授停顿了一下，给出了详细的解答。`];
     },
-    e:['主动提问！','好感度 +3，平时分 +0.5，智力 +0.1。'], nx:'class', mp:3
+    e:['主动提问！','好感度 +3，平时分 +0.5，智力 +0.1。'], nx:'class', mp:3,
+    exec() {
+      addExp('int', 0.1);
+      const cc = todayCourse();
+      if (cc) {
+        initCourseProgress(cc.name);
+        G.courseProgress[cc.name].regular += 0.5;
+      }
+      G.mp -= 3;
+    }
   },
   chat_classmate: {
     n:['你悄悄凑近旁边的同学，低声交流了一下笔记。','教授的目光扫过来，你们同时低下头。'],
-    e:['与同学互动。','好感度 +2，被注意但忽视。'], nx:'class', mp:1
+    e:['与同学互动。','好感度 +2，被注意但忽视。'], nx:'class', mp:1,
+    exec() {
+      addExp('cha', 0.1);
+      G.mp -= 1;
+    }
   },
   rest: {
     get n() { return [`你在${G.loc}找了处安静的地方坐下，闭目休息片刻。银叶大道的风声让人心神安定。`]; },
-    e:['小憩完成。','SP +10，消耗约30分钟。'], nx:'free', sp:10
+    e:['小憩完成。','SP +10，消耗约30分钟。'], nx:'free', sp:10,
+    exec() {
+      G.sp = Math.min(G.sp + 10, G.spMax);
+    }
   },
   skip_class: { custom: true }
 };
@@ -1360,6 +1492,24 @@ function renderAll() {
   setText('hs-viol', `${G.viol} 次`);
   const vEl = g('hs-viol');
   if (vEl) vEl.style.color = G.viol > 0 ? 'var(--ng)' : 'var(--ok)';
+  
+  // 失控风险显示
+  const riskEl = document.querySelector('.hs:nth-child(3) .hs-v');
+  if (riskEl) {
+    let riskText, riskColor;
+    if (G.riskLevel < 30) {
+      riskText = '低';
+      riskColor = 'var(--ok)';
+    } else if (G.riskLevel < 70) {
+      riskText = '中';
+      riskColor = 'var(--gold)';
+    } else {
+      riskText = '高';
+      riskColor = 'var(--ng)';
+    }
+    riskEl.textContent = riskText;
+    riskEl.style.color = riskColor;
+  }
   const pips = document.querySelectorAll('#tb-pips .pip');
   pips.forEach((p,i)=>{ p.className='pip '+(i<G.period?'done':i===G.period?'curr':'fut'); });
   renderStats();
@@ -1379,27 +1529,19 @@ function act(id) {
   if (!a) return;
   if (a.custom) { if(a.exec) a.exec(); return; }
 
-  // 课程进度追踪
-  const c = todayCourse();
-  let evtExtra = '';
-  if (c && ['take_notes','ask_question','chat_classmate'].includes(id)) {
-    initCourseProgress(c.name);
-    const cp = G.courseProgress[c.name];
-    let pts = 0;
-    if (id === 'take_notes')     { cp.attended++; pts = 5 + Math.floor(Math.random() * 4); }  // 5-8
-    else if (id === 'ask_question') { cp.attended++; pts = 6 + Math.floor(Math.random() * 5); }  // 6-10
-    else if (id === 'chat_classmate') { cp.attended++; pts = 1 + Math.floor(Math.random() * 2); }  // 1-2
-    cp.regular += pts;
-    const reg = getRegularScore(c.name);
-    evtExtra = ` · 出勤 ${cp.attended}/${cp.total} · 平时分 ${reg}`;
-  }
-
   addDiv();
   const narr = typeof a.n === 'function' ? a.n() : (Array.isArray(a.n) ? a.n : [a.n]);
   pushNarr(narr);
-  pushEvt(a.e[0], a.e[1] + evtExtra);
-  if (a.mp) G.mp = Math.max(0, G.mp - a.mp);
-  if (a.sp) G.sp = Math.min(G.spMax, G.sp + a.sp);
+  pushEvt(a.e[0], a.e[1]);
+  
+  // 执行动作的逻辑
+  if (a.exec) {
+    a.exec();
+  }
+  
+  // 检查失控风险
+  checkRisk();
+  
   renderAll();
   autoSave();
   setTimeout(() => setBtns(a.nx || 'class'), 200);
