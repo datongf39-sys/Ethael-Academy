@@ -464,8 +464,8 @@ button { font-family: inherit; cursor: pointer; }
       </svg>
     </div>
     <div>
-      <div class="tb-cname">艾琳·薇拉</div>
-      <div class="tb-csub">精灵 · 曦光学部</div>
+      <div class="tb-cname" id="tb-cname">苏晚</div>
+      <div class="tb-csub" id="tb-csub">混血裔 · 幻澜学部</div>
     </div>
   </div>
 
@@ -536,18 +536,20 @@ button { font-family: inherit; cursor: pointer; }
     <div class="pbody">
       <div class="ps">
         <div class="psl">今日课程</div>
+        <div id="sched-list">
         <div class="si done"><div class="si-bar"></div><div class="si-bd"><div class="si-t">清晨</div><div class="si-n">自由时间</div></div></div>
         <div class="si curr"><div class="si-bar"></div><div class="si-bd"><div class="si-t">上午 · 进行中</div><div class="si-n">治愈术理论与实践</div><div class="si-d">曦光学部 · 主修</div></div></div>
         <div class="si up"><div class="si-bar"></div><div class="si-bd"><div class="si-t">下午</div><div class="si-n">魔法史通论</div><div class="si-d">通选课</div></div></div>
         <div class="si"><div class="si-bar"></div><div class="si-bd"><div class="si-t">傍晚</div><div class="si-n">自由时间</div></div></div>
         <div class="si"><div class="si-bar"></div><div class="si-bd"><div class="si-t">夜间</div><div class="si-n">就寝</div></div></div>
       </div>
+      </div><!-- /sched-list -->
       <div class="gdiv"></div>
       <div class="ps">
         <div class="psl">当前地点</div>
         <div class="loc-c">
           <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="13" rx="1.5" stroke="#C9A84C" stroke-width=".9"/><path d="M2 8h16" stroke="#C9A84C" stroke-width=".7"/><path d="M7 4V2M13 4V2" stroke="#C9A84C" stroke-width=".9" stroke-linecap="round"/><rect x="6" y="11" width="3" height="3" rx=".4" fill="#C9A84C" opacity=".4"/></svg>
-          <div><div class="loc-n" id="lp-loc">辉石殿 · 3层</div><div class="loc-d">曦光学部</div></div>
+          <div><div class="loc-n" id="lp-loc">梦蝶楼</div><div class="loc-d" id="lp-loc-sub">幻澜学部宿舍</div></div>
         </div>
       </div>
       <div class="gdiv"></div>
@@ -591,12 +593,7 @@ button { font-family: inherit; cursor: pointer; }
 
     <div id="abar">
       <div class="actx" id="actx">当前情境：上午 · 治愈术理论与实践课堂 · 教授提问触发</div>
-      <div class="abtns" id="abtns">
-        <button class="abtn pri" onclick="act('answer_correct')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L4 8L8.5 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>自信回答<span class="hk">1</span></button>
-        <button class="abtn" onclick="act('answer_partial')">尝试作答（不确定）<span class="hk">2</span></button>
-        <button class="abtn" onclick="act('observe')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="2" stroke="currentColor" stroke-width=".8"/><circle cx="5" cy="5" r=".8" fill="currentColor"/><path d="M1 5Q2.5 2.5 5 2.5Q7.5 2.5 9 5Q7.5 7.5 5 7.5Q2.5 7.5 1 5" stroke="currentColor" stroke-width=".8"/></svg>察言观色（感知判定）<span class="hk">3</span></button>
-        <button class="abtn dng" onclick="act('skip_answer')">支吾过去<span class="hk">4</span></button>
-      </div>
+      <div class="abtns" id="abtns"></div>
     </div>
   </div>
 
@@ -616,19 +613,12 @@ button { font-family: inherit; cursor: pointer; }
       <div class="gdiv"></div>
       <div class="ps">
         <div class="psl">能力值</div>
-        <div class="ag">
-          <div class="ac"><div class="an">智力</div><div class="av up">12</div></div>
-          <div class="ac"><div class="an">法力</div><div class="av up">13</div></div>
-          <div class="ac"><div class="an">体魄</div><div class="av dn">9</div></div>
-          <div class="ac"><div class="an">魅力</div><div class="av">10</div></div>
-          <div class="ac"><div class="an">感知</div><div class="av up">12</div></div>
-          <div class="ac" style="display:flex;align-items:center;justify-content:center;"><div class="an" style="font-size:8px;">精灵族</div></div>
-        </div>
+        <div class="ag" id="stat-grid"></div>
       </div>
       <div class="gdiv"></div>
       <div class="ps">
         <div class="psl">隐藏状态</div>
-        <div class="hs"><span class="hs-n">曦光声望</span><span class="hs-v">●●●○○</span></div>
+        <div class="hs"><span class="hs-n" id="hs-rep-label">幻澜声望</span><span class="hs-v" id="hs-rep">○○○○○</span></div>
         <div class="hs"><span class="hs-n">违纪记录</span><span class="hs-v" style="color:var(--ok)" id="hs-viol">0 次</span></div>
         <div class="hs"><span class="hs-n">失控风险</span><span class="hs-v" style="color:var(--ok)">低</span></div>
       </div>
@@ -697,7 +687,7 @@ button { font-family: inherit; cursor: pointer; }
     <div class="mm-title">角色状态</div>
   </div>
   <div class="mm-body">
-    <div class="psl">艾琳·薇拉 · 精灵 · 曦光学部</div>
+    <div class="psl" id="mob-char-title">苏晚 · 混血裔 · 幻澜学部</div>
     <div class="sr" style="margin-bottom:9px;"><div class="sl"><span>HP 生命值</span><span class="sv">85/100</span></div><div class="sbg" style="height:6px;"><div class="sf hp" style="width:85%"></div></div></div>
     <div class="sr" style="margin-bottom:9px;"><div class="sl"><span>MP 魔法值</span><span class="sv">62/80</span></div><div class="sbg" style="height:6px;"><div class="sf mp" style="width:77.5%"></div></div></div>
     <div class="sr" style="margin-bottom:9px;"><div class="sl"><span>SP 体力值</span><span class="sv">40/60</span></div><div class="sbg" style="height:6px;"><div class="sf sp" style="width:66.7%"></div></div></div>
@@ -713,7 +703,7 @@ button { font-family: inherit; cursor: pointer; }
     </div>
     <div class="gdiv" style="margin:12px 0;"></div>
     <div class="psl">隐藏状态</div>
-    <div class="hs"><span class="hs-n">曦光声望</span><span class="hs-v">●●●○○</span></div>
+    <div class="hs"><span class="hs-n" id="hs-rep-label">幻澜声望</span><span class="hs-v" id="hs-rep">○○○○○</span></div>
     <div class="hs"><span class="hs-n">违纪记录</span><span class="hs-v" style="color:var(--ok)">0 次</span></div>
     <div class="hs"><span class="hs-n">失控风险</span><span class="hs-v" style="color:var(--ok)">低</span></div>
     <div class="gdiv" style="margin:12px 0;"></div>
@@ -746,71 +736,452 @@ button { font-family: inherit; cursor: pointer; }
   </div>
 </div>
 
+
+<!-- ===== MAP MODAL ===== -->
+<div class="mo" id="map-mo" onclick="closeMap(event)">
+  <div class="mb" style="max-width:580px;">
+    <button class="mc-btn" onclick="closeMap(null,1)">✕</button>
+    <div class="mt-m">地图 · 伊瑟尔学院</div>
+    <div class="ms-m" id="map-cur-loc">当前位置：梦蝶楼</div>
+    <div id="map-content" style="max-height:58vh;overflow-y:auto;padding-right:4px;"></div>
+  </div>
+</div>
+
 <!-- ===== CALENDAR MODAL ===== -->
 <div class="mo" id="cal-mo" onclick="closeCal(event)">
   <div class="mb">
     <button class="mc-btn" onclick="closeCal(null,1)">✕</button>
-    <div class="mt-m">课程表 · 秋季学期 第3周</div>
-    <div class="ms-m">第3周 / 共16周 · 星期二 · 上午（当前）</div>
+    <div class="mt-m" id="cal-title">课程表</div>
+    <div class="ms-m" id="cal-sub"></div>
     <div>
-      <div class="cal-hr"><div></div><div class="cal-dh">周一</div><div class="cal-dh">周二 ●</div><div class="cal-dh">周三</div><div class="cal-dh">周四</div><div class="cal-dh">周五</div></div>
-      <div class="cal-r"><div class="cal-tl">清晨</div><div class="cal-c free">自由</div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">光幕构造学</div><div class="cd">曦光·主修</div></div><div class="cal-c free">自由</div><div class="cal-c free">自由</div></div>
-      <div class="cal-r"><div class="cal-tl">上午</div><div class="cal-c has"><div class="cn">治愈术理论</div><div class="cd">曦光·主修</div></div><div class="cal-c now has"><div class="cn">治愈术理论 ▶</div><div class="cd">曦光·主修</div></div><div class="cal-c has"><div class="cn">净化仪式学</div><div class="cd">曦光·主修</div></div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">圣辉基础</div><div class="cd">曦光·主修</div></div></div>
-      <div class="cal-r"><div class="cal-tl">下午</div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">魔法史通论</div><div class="cd">通选课</div></div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">跨族文化研究</div><div class="cd">通选课</div></div><div class="cal-c free">自由</div></div>
-      <div class="cal-r"><div class="cal-tl">傍晚</div><div class="cal-c free">自由</div><div class="cal-c free">自由</div><div class="cal-c free">自由</div><div class="cal-c has"><div class="cn">银羽辩论社</div><div class="cd">社团活动</div></div><div class="cal-c free">自由</div></div>
-      <div class="cal-r"><div class="cal-tl">夜间</div><div class="cal-c free">就寝</div><div class="cal-c free">就寝</div><div class="cal-c free">就寝</div><div class="cal-c free">就寝</div><div class="cal-c has"><div class="cn">自习/社交</div><div class="cd">自由</div></div></div>
-    </div>
+      <div id="cal-hdr" class="cal-hr"></div><div id="cal-body"></div>
     <div style="margin-top:10px;font-size:9px;color:var(--tx3);">第8周：期中考试 &nbsp;·&nbsp; 第16周：期末考试</div>
   </div>
 </div>
 
 <script>
 /* ============================================================
+   RACE DATABASE 种族数据库
+   ============================================================ */
+const RACES = {
+  human:    { name:'人类',   stat:{int:0,mag:0,phy:0,cha:0,sen:0}, skipChance:0.15, passive:'跨学部无衰减', hpBase:100, mpBase:80,  spBase:60 },
+  elf:      { name:'精灵',   stat:{int:2,mag:3,phy:-1,cha:0,sen:2}, skipChance:0.20, passive:'情光（紧张时发光）', hpBase:90,  mpBase:95,  spBase:55 },
+  vampire:  { name:'吸血鬼', stat:{int:0,mag:4,phy:-2,cha:2,sen:1}, skipChance:0.15, passive:'夜间效率+15%', hpBase:85,  mpBase:105, spBase:50 },
+  dwarf:    { name:'矮人',   stat:{int:1,mag:-1,phy:3,cha:-1,sen:0}, skipChance:0.12, passive:'抗扰乱减半', hpBase:110, mpBase:70,  spBase:70 },
+  merfolk:  { name:'人鱼',   stat:{int:0,mag:1,phy:-2,cha:3,sen:2}, skipChance:0.18, passive:'说服+20%', hpBase:85,  mpBase:85,  spBase:55 },
+  orc:      { name:'兽人',   stat:{int:-2,mag:1,phy:5,cha:-2,sen:0}, skipChance:0.20, passive:'体魄考试免失控', hpBase:130, mpBase:75,  spBase:80 },
+  darkelf:  { name:'暗精灵', stat:{int:2,mag:1,phy:-2,cha:-1,sen:4}, skipChance:0.07, passive:'逆向解析', hpBase:88,  mpBase:88,  spBase:52 },
+  halfling: { name:'半身人', stat:{int:1,mag:0,phy:-3,cha:3,sen:2}, skipChance:0.10, passive:'8%好运波动', hpBase:80,  mpBase:78,  spBase:65 },
+  dragonborn:{ name:'龙裔',  stat:{int:-1,mag:4,phy:2,cha:0,sen:-1}, skipChance:0.23, passive:'MP上限+25%', hpBase:105, mpBase:110, spBase:65 },
+  fey:      { name:'魅魔',   stat:{int:0,mag:1,phy:-4,cha:5,sen:2}, skipChance:0.09, passive:'人群MP+50%', hpBase:78,  mpBase:90,  spBase:50 },
+  halfblood:{ name:'混血裔', stat:{int:0,mag:0,phy:0,cha:1,sen:0}, skipChance:0.15, passive:'双系共鸣15%', hpBase:95,  mpBase:88,  spBase:58,
+    // 混血裔需要指定双亲
+    calcStats(p1, p2) {
+      const r1 = RACES[p1], r2 = RACES[p2];
+      const merged = {};
+      for (const k of Object.keys(this.stat)) {
+        merged[k] = Math.floor((r1.stat[k] + r2.stat[k]) / 2) + this.stat[k];
+      }
+      merged.cha += 1; // 混血裔额外魅力+1
+      return merged;
+    }
+  }
+};
+
+/* ============================================================
+   DEPT DATABASE 学部数据库
+   ============================================================ */
+const DEPTS = {
+  lucis:    { name:'曦光学部',  short:'曦光', dorm:'晨露阁', hall:'辉石殿',
+    courses: [
+      { name:'圣辉基础',      type:'主修', periods:[1], days:[0,4] },
+      { name:'治愈术理论与实践', type:'主修', periods:[1], days:[1,2] },
+      { name:'净化仪式学',    type:'主修', periods:[1], days:[3] },
+      { name:'光幕构造学',    type:'主修', periods:[0], days:[2] },
+    ]
+  },
+  umbrae:   { name:'暮影学部',  short:'暮影', dorm:'长夜馆', hall:'夜幕塔',
+    courses: [
+      { name:'荫影入门',      type:'主修', periods:[1], days:[0,3] },
+      { name:'时序术导论',    type:'主修', periods:[1], days:[2] },
+      { name:'诅咒学·解咒篇', type:'主修', periods:[0], days:[1,4] },
+      { name:'念力术基础',    type:'主修', periods:[1], days:[4] },
+    ]
+  },
+  silvae:   { name:'翠灵学部',  short:'翠灵', dorm:'绿荫苑', hall:'藤蔓学舍',
+    courses: [
+      { name:'草木共鸣入门',  type:'主修', periods:[0], days:[0,2] },
+      { name:'召唤术理论与实践', type:'主修', periods:[1], days:[1,3] },
+      { name:'药草学基础',    type:'主修', periods:[1], days:[0,4] },
+      { name:'高等药草学',    type:'主修', periods:[2], days:[2] },
+    ]
+  },
+  fornacis: { name:'炉铸学部',  short:'炉铸', dorm:'砧石居', hall:'铁壁学堂',
+    courses: [
+      { name:'符文基础刻录',  type:'主修', periods:[1], days:[0,2] },
+      { name:'锻铸入门',      type:'主修', periods:[0], days:[1,3] },
+      { name:'附魔术理论',    type:'主修', periods:[1], days:[4] },
+      { name:'解构与鉴定',    type:'主修', periods:[2], days:[0] },
+    ]
+  },
+  mentis:   { name:'幻澜学部',  short:'幻澜', dorm:'梦蝶楼', hall:'流光殿',
+    courses: [
+      { name:'幻象术入门',    type:'主修', periods:[1], days:[0,2] },
+      { name:'梦境术导论',    type:'主修', periods:[1], days:[1,4] },
+      { name:'魅惑术与伦理',  type:'主修', periods:[2], days:[3] },
+      { name:'心象投射基础',  type:'主修', periods:[0], days:[2,4] },
+    ]
+  },
+  belli:    { name:'战阵学部',  short:'战阵', dorm:'戎行寮', hall:'铁幕学堂',
+    courses: [
+      { name:'体魄强化基础',  type:'主修', periods:[0], days:[0,1,2,3,4] },
+      { name:'战阵术·小队协作', type:'主修', periods:[1], days:[2,4] },
+      { name:'魔抗修炼基础',  type:'主修', periods:[1], days:[0,3] },
+    ]
+  },
+  abyssi:   { name:'渊潮学部',  short:'渊潮', dorm:'涟波居', hall:'潮音殿',
+    courses: [
+      { name:'水流术入门',    type:'主修', periods:[1], days:[0,3] },
+      { name:'声波术基础',    type:'主修', periods:[1], days:[2,4] },
+      { name:'毒素学导论',    type:'主修', periods:[2], days:[1] },
+      { name:'水下魔法实践',  type:'主修', periods:[0], days:[1,4] },
+    ]
+  },
+  stellae:  { name:'星脉学部',  short:'星脉', dorm:'星辰舍', hall:'天枢馆',
+    courses: [
+      { name:'元素魔法概论',  type:'主修', periods:[1], days:[0,2,4] },
+      { name:'大地术基础',    type:'主修', periods:[0], days:[1,3] },
+      { name:'元素专精',      type:'主修', periods:[1], days:[1] },
+      { name:'跨系魔法理论',  type:'主修', periods:[2], days:[3] },
+    ]
+  }
+};
+
+// 通选课（全院）
+const COMMON_COURSES = [
+  { name:'魔法史通论',    type:'通选', periods:[2], days:[1,3] },
+  { name:'跨族文化研究',  type:'通选', periods:[2], days:[0,4] },
+  { name:'魔法伦理学',    type:'通选', periods:[3], days:[2] },
+  { name:'古代语言入门',  type:'通选', periods:[0], days:[3] },
+  { name:'学院生存指南',  type:'通选', periods:[3], days:[0] },
+];
+
+/* ============================================================
+   MAP 地图系统
+   ============================================================ */
+const LOCATIONS = {
+  // 公共区域
+  via:      { name:'银叶大道',      sub:'Via Argentea',    dept:null,     icon:'road',   desc:'学院主干道，两侧银叶白杨。' },
+  forum:    { name:'中央广场',      sub:'Forum Centrale',  dept:null,     icon:'plaza',  desc:'学院地理中心，公告栏所在地。' },
+  horti:    { name:'晖湖畔花园',    sub:'Horti Lacustres', dept:null,     icon:'garden', desc:'春季花期最美，考试季最挤。' },
+  campus:   { name:'落星操场',      sub:'Campus Stellarum',dept:null,     icon:'field',  desc:'全院最大户外运动场。' },
+  ambul:    { name:'迷径花廊',      sub:'Ambulacrum',      dept:null,     icon:'path',   desc:'幻象与翠灵交界，随机事件高发。' },
+  thermae:  { name:'矿石浴场',      sub:'Thermae Minerales',dept:null,    icon:'spa',    desc:'天然温泉，SP恢复效果最佳。' },
+  biblio:   { name:'星见书坊',      sub:'Bibliotheca',     dept:null,     icon:'lib',    desc:'公共图书馆，附设墨香座咖啡角。' },
+  atrium:   { name:'学生事务大厅',  sub:'Atrium',          dept:null,     icon:'admin',  desc:'教导主任办公室所在地。' },
+  // 各学部
+  lucis_h:  { name:'辉石殿',        sub:'曦光学部',        dept:'lucis',  icon:'dept',   desc:'白色大理石，彩色玻璃窗。' },
+  lucis_d:  { name:'晨露阁',        sub:'曦光学部宿舍',    dept:'lucis',  icon:'dorm',   desc:'朝东宿舍，就寝管理最严。' },
+  umbrae_h: { name:'夜幕塔',        sub:'暮影学部',        dept:'umbrae', icon:'dept',   desc:'幽蓝灯笼，影匿门遍布。' },
+  umbrae_d: { name:'长夜馆',        sub:'暮影学部宿舍',    dept:'umbrae', icon:'dorm',   desc:'厚窗帘，作息最晚。' },
+  silvae_h: { name:'藤蔓学舍',      sub:'翠灵学部',        dept:'silvae', icon:'dept',   desc:'半嵌入白杨林，草木气息。' },
+  silvae_d: { name:'绿荫苑',        sub:'翠灵学部宿舍',    dept:'silvae', icon:'dorm',   desc:'外墙藤蔓，管理最宽松。' },
+  fornacis_h:{ name:'铁壁学堂',     sub:'炉铸学部',        dept:'fornacis',icon:'dept',  desc:'防火黑石，常年炉火轰鸣。' },
+  mentis_h: { name:'流光殿',        sub:'幻澜学部',        dept:'mentis', icon:'dept',   desc:'外观随心境变化，空间有轻度扭曲。' },
+  mentis_d: { name:'梦蝶楼',        sub:'幻澜学部宿舍',    dept:'mentis', icon:'dorm',   desc:'每间宿舍墙壁可施幻象装饰。' },
+  belli_h:  { name:'铁幕学堂',      sub:'战阵学部',        dept:'belli',  icon:'dept',   desc:'实操场地占80%，理论课极少。' },
+  abyssi_h: { name:'潮音殿',        sub:'渊潮学部',        dept:'abyssi', icon:'dept',   desc:'临晖湖而建，底层在水面以下。' },
+  stellae_h:{ name:'天枢馆',        sub:'星脉学部',        dept:'stellae',icon:'dept',   desc:'位于山肩高处，须经石阶到达。' },
+};
+
+/* ============================================================
+   CHARACTER 角色数据（默认测试角色）
+   ============================================================ */
+function buildCharacter(cfg) {
+  const raceKey = cfg.race;
+  const race = RACES[raceKey];
+  const dept = DEPTS[cfg.dept];
+
+  // 计算基础能力值（10为人类基准）
+  let stats;
+  if (raceKey === 'halfblood' && cfg.parents) {
+    stats = race.calcStats(cfg.parents[0], cfg.parents[1]);
+    // 加上基准10
+    for (const k of Object.keys(stats)) stats[k] += 10;
+  } else {
+    stats = {};
+    for (const [k, v] of Object.entries(race.stat)) stats[k] = 10 + v;
+  }
+
+  // HP/MP/SP 最大值（基础 + 体魄/法力调整）
+  const hpMax = race.hpBase + Math.floor((stats.phy - 10) * 2);
+  const mpMax = race.mpBase + Math.floor((stats.mag - 10) * 2);
+  const spMax = race.spBase + Math.floor((stats.phy - 10) * 1);
+
+  return {
+    name:     cfg.name,
+    race:     raceKey,
+    raceName: raceKey === 'halfblood' && cfg.parents
+              ? `混血裔（${RACES[cfg.parents[0]].name}×${RACES[cfg.parents[1]].name}）`
+              : race.name,
+    dept:     cfg.dept,
+    deptName: dept.name,
+    deptShort:dept.short,
+    parents:  cfg.parents || null,
+    stats,
+    skipChance: race.skipChance,
+    passive:  race.passive,
+    hpMax, mpMax, spMax,
+    hp: hpMax, mp: mpMax, sp: spMax,
+  };
+}
+
+// ★ 默认测试角色：苏晚，混血裔（精灵×人类），幻澜学部
+const CHAR = buildCharacter({
+  name: '苏晚',
+  race: 'halfblood',
+  parents: ['elf', 'human'],
+  dept: 'mentis',
+});
+
+/* ============================================================
+   SCHEDULE 课程表生成
+   ============================================================ */
+function buildSchedule(deptKey) {
+  // 每天每时段的课程 schedule[day][period] = {name, type} | null
+  const schedule = Array.from({length:5}, () => Array(5).fill(null));
+  const dept = DEPTS[deptKey];
+
+  // 填入主修课
+  for (const c of dept.courses) {
+    for (const day of c.days) {
+      for (const period of c.periods) {
+        if (!schedule[day][period]) {
+          schedule[day][period] = { name: c.name, type: c.type };
+        }
+      }
+    }
+  }
+
+  // 填入通选课（随机选2门）
+  const chosen = COMMON_COURSES.slice(0, 2);
+  for (const c of chosen) {
+    for (const day of c.days.slice(0,2)) {
+      for (const period of c.periods) {
+        if (!schedule[day][period]) {
+          schedule[day][period] = { name: c.name, type: c.type };
+        }
+      }
+    }
+  }
+
+  return schedule;
+}
+
+const SCHEDULE = buildSchedule(CHAR.dept);
+
+/* ============================================================
    STATE
    ============================================================ */
-const PERIODS = ['清晨','上午','下午','傍晚','夜间'];
-const DAYS    = ['星期一','星期二','星期三','星期四','星期五'];
-const SEMS    = ['秋季学期','冬季学期','春季学期','夏季学期'];
-const SHORTDAY= ['一','二','三','四','五'];
+const PERIODS  = ['清晨','上午','下午','傍晚','夜间'];
+const DAYS     = ['星期一','星期二','星期三','星期四','星期五'];
+const SEMS     = ['秋季学期','冬季学期','春季学期','夏季学期'];
+const SHORTDAY = ['一','二','三','四','五'];
 
 const G = {
-  sem:0, week:3, day:1, period:1,
-  hp:85, hpMax:100, mp:62, mpMax:80, sp:40, spMax:60,
-  gold:128, crystal:3, viol:0, loc:'辉石殿 · 3层'
+  sem:0, week:1, day:0, period:0,
+  hp: CHAR.hp, hpMax: CHAR.hpMax,
+  mp: CHAR.mp, mpMax: CHAR.mpMax,
+  sp: CHAR.sp, spMax: CHAR.spMax,
+  gold:80, crystal:2, viol:0,
+  loc: DEPTS[CHAR.dept].dorm,
+  locKey: CHAR.dept + '_d',
+  stats: { ...CHAR.stats },
+  repute: { [CHAR.dept]: 0 },  // 各学部声望 -100~100
+  attendance: {},               // 课程出勤率
 };
+
+/* ============================================================
+   SCHEDULE HELPERS
+   ============================================================ */
+function todayCourse() {
+  return SCHEDULE[G.day][G.period] || null;
+}
+
+function schedDesc() {
+  const c = todayCourse();
+  if (c) return `课程：${c.name}（${c.type}）`;
+  if (G.period === 4) return '就寝时间';
+  return '自由时间';
+}
+
+function renderScheduleSidebar() {
+  const el = document.getElementById('sched-list');
+  if (!el) return;
+  const pnames = PERIODS;
+  el.innerHTML = pnames.map((pn, pi) => {
+    const c = SCHEDULE[G.day][pi];
+    let cls = '';
+    if (pi < G.period) cls = 'done';
+    else if (pi === G.period) cls = 'curr';
+    else if (pi === G.period + 1) cls = 'up';
+    return `<div class="si ${cls}">
+      <div class="si-bar"></div>
+      <div class="si-bd">
+        <div class="si-t">${pn}${pi === G.period ? ' · 进行中' : ''}</div>
+        <div class="si-n">${c ? c.name : (pi === 4 ? '就寝' : '自由时间')}</div>
+        ${c ? `<div class="si-d">${DEPTS[CHAR.dept].deptShort || CHAR.deptShort} · ${c.type}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCalendar() {
+  const hdr = document.getElementById('cal-hdr');
+  const body = document.getElementById('cal-body');
+  if (!hdr || !body) return;
+
+  const dayNames = ['周一','周二','周三','周四','周五'];
+  hdr.innerHTML = '<div></div>' + dayNames.map((d,i) =>
+    `<div class="cal-dh">${d}${i===G.day?' ●':''}</div>`
+  ).join('');
+
+  body.innerHTML = PERIODS.map((pn, pi) =>
+    `<div class="cal-r">
+      <div class="cal-tl">${pn}</div>
+      ${Array.from({length:5},(_,di)=>{
+        const c = SCHEDULE[di][pi];
+        let cls = 'cal-c';
+        if (c) cls += ' has';
+        else cls += (pi===4 ? ' free' : ' free');
+        if (di===G.day && pi===G.period) cls += ' now';
+        return `<div class="${cls}">${c
+          ? `<div class="cn">${c.name}${di===G.day&&pi===G.period?' ▶':''}</div><div class="cd">${c.type}</div>`
+          : `<span style="font-size:8px;color:var(--tx3)">${pi===4?'就寝':'自由'}</span>`
+        }</div>`;
+      }).join('')}
+    </div>`
+  ).join('');
+
+  // 更新日历标题
+  const t = document.getElementById('cal-title');
+  const s = document.getElementById('cal-sub');
+  if (t) t.textContent = `课程表 · ${SEMS[G.sem]} 第${G.week}周`;
+  if (s) s.textContent = `第${G.week}周 / 共16周 · ${DAYS[G.day]} · ${PERIODS[G.period]}（当前）`;
+}
+
+/* ============================================================
+   MAP MODAL
+   ============================================================ */
+function openMap() {
+  const mo = document.getElementById('map-mo');
+  if (mo) { mo.classList.add('open'); renderMapModal(); }
+}
+function closeMap(e, force) {
+  if (force || (e && e.target.id === 'map-mo'))
+    document.getElementById('map-mo').classList.remove('open');
+}
+
+function renderMapModal() {
+  const el = document.getElementById('map-content');
+  if (!el) return;
+
+  const groups = [
+    { label:'公共区域', keys:['via','forum','horti','campus','ambul','thermae','biblio','atrium'] },
+    { label:'曦光学部', keys:['lucis_h','lucis_d'] },
+    { label:'暮影学部', keys:['umbrae_h','umbrae_d'] },
+    { label:'翠灵学部', keys:['silvae_h','silvae_d'] },
+    { label:'炉铸学部', keys:['fornacis_h'] },
+    { label:'幻澜学部', keys:['mentis_h','mentis_d'] },
+    { label:'战阵学部', keys:['belli_h'] },
+    { label:'渊潮学部', keys:['abyssi_h'] },
+    { label:'星脉学部', keys:['stellae_h'] },
+  ];
+
+  el.innerHTML = groups.map(grp => `
+    <div class="psl" style="margin-top:10px;">${grp.label}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:4px;">
+      ${grp.keys.map(k => {
+        const loc = LOCATIONS[k];
+        const isCurr = G.locKey === k;
+        return `<button onclick="travelTo('${k}')" style="
+          padding:7px 9px;border-radius:5px;text-align:left;cursor:pointer;
+          border:1px solid ${isCurr ? 'var(--gold)' : 'var(--bd)'};
+          background:${isCurr ? 'var(--ac)' : 'var(--bg)'};
+          transition:all .18s;
+        ">
+          <div style="font-size:10px;font-weight:500;color:${isCurr?'var(--gold)':'var(--tx)'};">${loc.name}${isCurr?' ●':''}</div>
+          <div style="font-size:8px;color:var(--tx3);margin-top:1px;">${loc.desc}</div>
+        </button>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function travelTo(locKey) {
+  const loc = LOCATIONS[locKey];
+  if (!loc) return;
+  G.locKey = locKey;
+  G.loc = loc.name;
+  closeMap(null, true);
+  addDiv();
+  pushNarr([`你前往${loc.name}。${loc.desc}`]);
+  renderAll();
+  setBtns('free');
+  // 更新侧边栏地点显示
+  const lel = document.getElementById('lp-loc');
+  if (lel) lel.textContent = loc.name;
+  const lsub = document.getElementById('lp-loc-sub');
+  if (lsub) lsub.textContent = loc.sub;
+}
 
 /* ============================================================
    ACTION BANK
    ============================================================ */
 const A = {
-  answer_correct:  { n:['你镇定地站起身，列举治愈术禁忌症状——「开放性骨折合并大面积魔力灼伤时，应先行净化再治愈，否则可能导致魔力错乱。」','维斯塔教授微微点头，眼中有一丝不易察觉的赞许。「正确。请坐。」'], e:['回答正确！','平时分 +1，与维斯塔教授好感度 +2。'], nx:'class', mp:0 },
-  answer_partial:  { n:['你说出了两个禁忌症状，第三个卡壳了。维斯塔教授等待了几秒，然后补充完了答案。','「有所了解，但还需加强记忆。」她的语气不温不火。'], e:['部分正确。','平时分 +0.5。'], nx:'class', mp:0 },
-  observe:         { n:['你运用感知能力，察觉教授目光已扫过你的方向，下一个提问对象或许是右侧的同学——','果然，维斯塔教授转向了坐在你右侧的矮人同学。你悄悄松了口气。'], e:['感知判定成功！','规避提问。感知经验 +0.2，MP -3。'], nx:'class', mp:3 },
-  skip_answer:     { n:['「呃……是……失血过多的情况下……」你支支吾吾，思路一片空白。','「坐下，课后来找我补课。」一股社死的寒意从脊背蔓延开来。'], e:['回答失败。','平时分 -0.5，被要求补课。'], nx:'class', mp:0 },
-  take_notes:      { n:['你专心听讲，笔尖快速划过笔记本。一节课下来，填满了整整两页。'], e:['认真听讲！','智力经验 +0.3，法力经验 +0.2，出勤 +1，MP -5。'], nx:'class', mp:5 },
-  ask_question:    { n:['「教授，先天魔力不稳定的患者，净化步骤是否需要更长时间？」','维斯塔教授停顿了一下。「这是个好问题。理论上需要延长约30%的净化时间。」'], e:['主动提问！','好感度 +3，平时分 +0.5，智力 +0.1。'], nx:'class', mp:3 },
-  chat_classmate:  { n:['你悄悄凑近旁边的同学，用气声问：「上次笔记整理了吗？」','她快速递过来一张纸条：「整理了，课后给你。」维斯塔教授的目光扫了一下，你们同时低下头。'], e:['与同学互动。','好感度 +2，被注意但忽视。'], nx:'class', mp:1 },
-  rest:            { n:['你找了一处石凳坐下，闭目休息片刻。银叶大道的风声混合着远处的铸炉声，意外地让人心神安定。'], e:['小憩完成。','SP +10，消耗约30分钟。'], nx:'free', sp:10 },
-  skip_class:      { custom: true }
+  take_notes: {
+    get n() { return [`你专心听讲，笔尖快速划过笔记本。感知值${G.stats.sen}让你精准捕捉到教授的每一个重点。`]; },
+    e:['认真听讲！','智力经验 +0.3，法力经验 +0.2，出勤 +1，MP -5。'], nx:'class', mp:5
+  },
+  ask_question: {
+    get n() {
+      const c = todayCourse();
+      return [`「教授，关于${c ? c.name : '这节课'}的内容我有一个疑问——」`,`教授停顿了一下，给出了详细的解答。`];
+    },
+    e:['主动提问！','好感度 +3，平时分 +0.5，智力 +0.1。'], nx:'class', mp:3
+  },
+  chat_classmate: {
+    n:['你悄悄凑近旁边的同学，低声交流了一下笔记。','教授的目光扫过来，你们同时低下头。'],
+    e:['与同学互动。','好感度 +2，被注意但忽视。'], nx:'class', mp:1
+  },
+  rest: {
+    get n() { return [`你在${G.loc}找了处安静的地方坐下，闭目休息片刻。银叶大道的风声让人心神安定。`]; },
+    e:['小憩完成。','SP +10，消耗约30分钟。'], nx:'free', sp:10
+  },
+  skip_class: { custom: true }
 };
 
-/* skip_class custom logic */
 A.skip_class.exec = function() {
   addDiv();
-  const caught = Math.random() < 0.20;
+  const chance = CHAR.skipChance;
+  const caught = Math.random() < chance;
   if (caught) {
-    pushNarr(['趁着维斯塔教授转身写字，你悄悄向后门移动……','「艾琳同学，请问你要去哪里？」教授的声音清晰地穿越了整间教室。你僵在原地，情光（精灵紧张时的皮肤发光）彻底背叛了你。']);
-    pushEvt('被发现！（精灵基础概率20%）','违纪记录 +1，强制返回座位。');
+    // 不同种族有不同的被发现方式
+    let caught_text = '你被发现了。';
+    if (CHAR.race === 'elf') caught_text = '情光（精灵紧张时的皮肤发光）彻底背叛了你。';
+    else if (CHAR.race === 'halfblood' && CHAR.parents && CHAR.parents.includes('elf'))
+      caught_text = '你隐约发光的皮肤出卖了你——精灵血统带来的情光在最糟糕的时机显现。';
+    else if (CHAR.race === 'dragonborn') caught_text = '龙裔的体型实在太显眼了。';
+    else if (CHAR.race === 'merfolk') caught_text = '日间鳞光在走廊里一闪而过，引起了教授的注意。';
+    pushNarr([`你悄悄向后门移动……`, caught_text]);
+    pushEvt(`被发现！（${CHAR.raceName}基础概率${Math.round(chance*100)}%）`,'违纪记录 +1，强制返回座位。');
     G.viol++;
     renderAll();
     setTimeout(() => setBtns('class'), 200);
   } else {
-    pushNarr(['走廊里空无一人，阳光懒散地铺在青石地板上。你成功溜出来了——银叶大道的风吹散了课堂的紧张感。']);
+    pushNarr([`走廊里空无一人。你成功溜出来了——${G.loc}的风吹散了课堂的紧张感。`]);
     pushEvt('翘课成功。','上午可自由活动，出勤 -1（影响平时分）。');
-    G.loc = '银叶大道';
-    const lel = document.getElementById('lp-loc');
-    if (lel) lel.textContent = G.loc;
-    renderAll();
+    travelTo('via');
     setTimeout(() => setBtns('free'), 200);
   }
 };
@@ -840,17 +1211,12 @@ function pushEvt(title, desc) {
   setTimeout(()=>c.scrollIntoView({behavior:'smooth',block:'end'}),80);
 }
 function pushBanner() {
+  const c = todayCourse();
   const b = document.createElement('div');
   b.className = 'tbanner';
   b.innerHTML = `<svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="#C9A84C" stroke-width="1.1"/><path d="M9 5.5v4l2.5 1.5" stroke="#C9A84C" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div class="bt">${PERIODS[G.period]} · ${SEMS[G.sem]} 第${G.week}周 ${DAYS[G.day]}</div><div class="bs">${schedDesc()}</div></div>`;
   area().appendChild(b);
   setTimeout(()=>b.scrollIntoView({behavior:'smooth',block:'start'}),50);
-}
-
-function schedDesc() {
-  const m=[['自由时间',''],['治愈术理论与实践','曦光学部主修'],['魔法史通论','通选课'],['自由时间',''],['就寝时间','']];
-  const [n,d]=m[G.period]||['—',''];
-  return d ? `课程：${n}（${d}）` : `时间段：${n}`;
 }
 
 /* ============================================================
@@ -859,9 +1225,33 @@ function schedDesc() {
 function g(id){ return document.getElementById(id); }
 function setText(id,v){ const el=g(id); if(el) el.textContent=v; }
 function setBar(nm,v,mx) {
-  const p = Math.round(v/mx*100);
   setText(`${nm}-v`,`${v}/${mx}`);
-  const f=g(`${nm}-f`); if(f) f.style.width=p+'%';
+  const f=g(`${nm}-f`); if(f) f.style.width=Math.round(v/mx*100)+'%';
+}
+
+function renderStats() {
+  // 顶部栏角色信息
+  setText('tb-cname', CHAR.name);
+  setText('tb-csub', `${CHAR.raceName} · ${CHAR.deptName}`);
+  setText('mob-char-title', `${CHAR.name} · ${CHAR.raceName} · ${CHAR.deptName}`);
+
+  // 右侧面板能力值
+  const statMap = {int:'智力',mag:'法力',phy:'体魄',cha:'魅力',sen:'感知'};
+  const ag = g('stat-grid');
+  if (ag) {
+    ag.innerHTML = Object.entries(statMap).map(([k,label]) => {
+      const base = 10;
+      const v = G.stats[k];
+      const cls = v > base ? 'up' : v < base ? 'dn' : '';
+      return `<div class="ac"><div class="an">${label}</div><div class="av ${cls}">${v}</div></div>`;
+    }).join('') + `<div class="ac"><div class="an">种族</div><div class="an" style="font-size:9px;margin:0;">${CHAR.raceName.replace('混血裔（','').replace('）','')}</div></div>`;
+  }
+
+  // 声望
+  const rep = G.repute[CHAR.dept] || 0;
+  const repDots = '●'.repeat(Math.max(0,Math.round((rep+100)/40))) + '○'.repeat(5-Math.max(0,Math.round((rep+100)/40)));
+  setText('hs-rep', repDots.slice(0,5));
+  setText('hs-rep-label', CHAR.deptShort + '声望');
 }
 
 function renderAll() {
@@ -883,9 +1273,14 @@ function renderAll() {
   setText('hs-viol', `${G.viol} 次`);
   const vEl = g('hs-viol');
   if (vEl) vEl.style.color = G.viol > 0 ? 'var(--ng)' : 'var(--ok)';
-  // Pips
   const pips = document.querySelectorAll('#tb-pips .pip');
   pips.forEach((p,i)=>{ p.className='pip '+(i<G.period?'done':i===G.period?'curr':'fut'); });
+  renderStats();
+  renderScheduleSidebar();
+  // 地点显示
+  const lel = g('lp-loc'); if (lel) lel.textContent = G.loc;
+  const lsub = g('lp-loc-sub');
+  if (lsub) lsub.textContent = LOCATIONS[G.locKey] ? LOCATIONS[G.locKey].sub : '';
 }
 
 /* ============================================================
@@ -896,7 +1291,8 @@ function act(id) {
   if (!a) return;
   if (a.custom) { if(a.exec) a.exec(); return; }
   addDiv();
-  pushNarr(a.n);
+  const narr = typeof a.n === 'function' ? a.n() : (Array.isArray(a.n) ? a.n : [a.n]);
+  pushNarr(narr);
   pushEvt(a.e[0], a.e[1]);
   if (a.mp) G.mp = Math.max(0, G.mp - a.mp);
   if (a.sp) G.sp = Math.min(G.spMax, G.sp + a.sp);
@@ -906,8 +1302,9 @@ function act(id) {
 
 function setBtns(type) {
   const ctx = g('actx'), btns = g('abtns');
-  if (type === 'class') {
-    ctx.textContent = `当前情境：${PERIODS[G.period]} · 治愈术理论与实践课堂 · 课程进行中`;
+  const c = todayCourse();
+  if (type === 'class' && c) {
+    ctx.textContent = `当前情境：${PERIODS[G.period]} · ${c.name} · 课程进行中`;
     btns.innerHTML = `
       <button class="abtn pri" onclick="act('take_notes')">认真听课做笔记<span class="hk">1</span></button>
       <button class="abtn" onclick="act('ask_question')">向教授提问<span class="hk">2</span></button>
@@ -918,7 +1315,7 @@ function setBtns(type) {
     btns.innerHTML = `
       <button class="abtn pri" onclick="advTime()">推进到下一时间段<span class="hk">↵</span></button>
       <button class="abtn" onclick="act('rest')">小憩 (SP+10)<span class="hk">2</span></button>
-      <button class="abtn" onclick="qa('explore')">探索当前地点<span class="hk">3</span></button>
+      <button class="abtn" onclick="openMap()">查看地图<span class="hk">3</span></button>
       <button class="abtn" onclick="qa('npc')">寻找附近学生<span class="hk">4</span></button>`;
   }
 }
@@ -926,10 +1323,10 @@ function setBtns(type) {
 /* ============================================================
    TIME
    ============================================================ */
-const ptxt = {
-  0: '清晨的薄雾尚未散去，学院里只有晨练的战阵学部学子的脚步声。银脊山脉的风带着清冽的气息吹来。',
-  2: '下午的阳光偏斜，辉石殿走廊的彩色光斑移到了墙壁另一侧。课间的喧嚣与片刻宁静交替流淌过去。',
-  3: '傍晚时分，晖湖畔花园里飘来花草的气息。银叶大道上三三两两的学子在散步，社团活动的招牌吸引着人群。',
+const PERIOD_TEXT = {
+  0: ()=>`清晨的薄雾尚未散去。${CHAR.deptName}的学子们陆续起床，${DEPTS[CHAR.dept].dorm}走廊里传来轻微的声响。`,
+  2: ()=>`下午的阳光偏斜。你从${DEPTS[CHAR.dept].hall}走出来，银叶大道上的风带着草木气息。`,
+  3: ()=>`傍晚时分，晖湖畔花园里飘来花草的气息。银叶大道上三三两两的学子在散步。`,
 };
 
 function advTime() {
@@ -939,20 +1336,29 @@ function advTime() {
     if (G.day >= 5) { G.day = 0; G.week++; }
     if (G.week > 16) { G.week = 1; G.sem = (G.sem+1)%4; }
     G.sp = G.spMax; G.mp = G.mpMax; G.hp = G.hpMax;
+    // 回到宿舍
+    G.locKey = CHAR.dept + '_d';
+    G.loc = DEPTS[CHAR.dept].dorm;
   }
   renderAll();
+  renderCalendar();
   addDiv();
   pushBanner();
-  const isClass = (G.period === 1 && G.day === 1);
+  const c = todayCourse();
   if (G.period === 4) {
-    pushNarr(['夜深了，你回到宿舍「晨露阁」，洗漱后躺上床铺。窗外月光将银叶白杨的影子拉得细长。','翌日又是新的开始。（HP/MP/SP 全额恢复）']);
+    pushNarr([`夜深了，你回到${DEPTS[CHAR.dept].dorm}，洗漱后躺上床铺。窗外月光将银叶白杨的影子拉得细长。`,`翌日又是新的开始。（HP/MP/SP 全额恢复）`]);
     pushEvt('就寝完成。','进入明天。');
     setTimeout(()=>setBtns('free'),300);
-  } else if (isClass) {
-    pushNarr(['上午的课程时间又到了。辉石殿教室里，同学们陆续就座，维斯塔教授已站在讲台前。']);
+  } else if (c) {
+    // 有课
+    G.locKey = CHAR.dept + '_h';
+    G.loc = DEPTS[CHAR.dept].hall;
+    pushNarr([`${PERIODS[G.period]}的课程时间到了。你前往${DEPTS[CHAR.dept].hall}，${c.name}即将开始。`]);
+    renderAll();
     setBtns('class');
   } else {
-    pushNarr([ptxt[G.period] || '时间悄然流逝……']);
+    const txt = PERIOD_TEXT[G.period];
+    pushNarr([txt ? txt() : '时间悄然流逝……']);
     setBtns('free');
   }
 }
@@ -965,7 +1371,10 @@ function colPanel(pid, bid, openChr, closedChr) {
   p.classList.toggle('col');
   b.textContent = p.classList.contains('col') ? closedChr : openChr;
 }
-function openCal()  { g('cal-mo').classList.add('open'); }
+function openCal()  {
+  g('cal-mo').classList.add('open');
+  renderCalendar();
+}
 function closeCal(e,f) { if(f||(e&&e.target.id==='cal-mo')) g('cal-mo').classList.remove('open'); }
 function toggleNfp() {
   g('nfp').classList.toggle('open');
@@ -1010,7 +1419,13 @@ function setTheme(t, el) {
    ============================================================ */
 function qa(type) {
   addDiv();
-  const m={map:'（地图系统将在后续版本开放）',npc:'（NPC互动系统将在P1阶段展开）',bag:'（背包系统将在P2阶段开放）',explore:'你在'+G.loc+'附近漫步，留意着每一处细节……'};
+  const m = {
+    npc:'（NPC互动系统将在P1阶段展开）',
+    bag:'（背包系统将在P2阶段开放）',
+    explore:`你在${G.loc}附近漫步，留意着每一处细节……`,
+    map: ''
+  };
+  if (type === 'map') { openMap(); return; }
   pushNarr([m[type]||'（功能开发中）']);
 }
 
@@ -1025,6 +1440,7 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape') {
     document.querySelectorAll('.mo.open').forEach(m=>m.classList.remove('open'));
     document.querySelectorAll('.mm.open').forEach(m=>{ const id=m.id; closeMM(id); });
+    const mapm = g('map-mo'); if(mapm) mapm.classList.remove('open');
   }
 });
 
@@ -1036,6 +1452,19 @@ document.addEventListener('keydown', e=>{
   try { t=localStorage.getItem('ethael-theme')||'pink'; } catch(e){}
   setTheme(t);
   renderAll();
+  renderCalendar();
+
+  // 初始叙事
+  const c = todayCourse();
+  const intro = document.getElementById('narrative');
+  if (intro) {
+    const banner = intro.querySelector('.tbanner');
+    if (banner) {
+      const bs = banner.querySelector('.bs');
+      if (bs) bs.textContent = schedDesc();
+    }
+  }
+  setBtns(c ? 'class' : 'free');
 })();
 </script>
 </body>
