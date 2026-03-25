@@ -4,6 +4,7 @@ import { LOCATIONS } from '../data/locations.js';
 import { addExp } from '../core/experience.js';
 import { checkRisk } from '../core/risk.js';
 import { renderAll, renderMapModal, renderCalendar } from './render.js';
+import { openNpcList } from './dialogue.js';
 
 // 快捷动作
 function qa(id) {
@@ -12,7 +13,7 @@ function qa(id) {
       openMap();
       break;
     case 'npc':
-      pushNarr(['你环顾四周，寻找附近的学生。']);
+      openNpcList();
       break;
     case 'bag':
       pushNarr(['你打开背包，检查里面的物品。']);
