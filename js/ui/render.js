@@ -36,6 +36,39 @@ export function renderStats() {
     }).join('') + `<div class="ac"><div class="an">种族</div><div class="an" style="font-size:9px;margin:0;">${CHAR.raceName.replace('混血裔（','').replace('）','')}</div></div>`;
   }
 
+  // 魔法亲和区块（S2.2）
+  const afEl = document.getElementById('affinity-panel');
+  if (afEl && CHAR.affinityConfig) {
+    const { innate, elective } = CHAR.affinityConfig;
+
+    const pct = rate => `${rate >= 0 ? '+' : ''}${Math.round(rate * 100)}%`;
+
+    // 固有亲和标签（灰色只读）
+    const innateHTML = innate.length
+      ? innate.map(a =>
+          `<span class="aff-tag aff-innate" title="固有亲和，不可更改">${a.label} ${pct(a.rate)}</span>`
+        ).join('')
+      : `<span class="aff-tag aff-none">无固有亲和</span>`;
+
+    // 自选亲和标签
+    const electiveHTML = elective.length
+      ? elective.map(a =>
+          `<span class="aff-tag aff-elective" title="自选亲和">${a.label} ${pct(a.rate)}</span>`
+        ).join('')
+      : `<span class="aff-tag aff-none">未选择</span>`;
+
+    afEl.innerHTML = `
+      <div class="aff-row">
+        <div class="aff-label">固有亲和</div>
+        <div class="aff-tags">${innateHTML}</div>
+      </div>
+      <div class="aff-row">
+        <div class="aff-label">自选亲和</div>
+        <div class="aff-tags">${electiveHTML}</div>
+      </div>
+    `;
+  }
+
   // 声望
   const rep = G.repute[CHAR.dept] || 0;
   const repDots = '●'.repeat(Math.max(0,Math.round((rep+100)/40))) + '○'.repeat(5-Math.max(0,Math.round((rep+100)/40)));

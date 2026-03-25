@@ -2,9 +2,13 @@
 import { G, PERIODS, DAYS, SEMS } from '../core/gameState.js';
 import { LOCATIONS } from '../data/locations.js';
 import { addExp } from '../core/experience.js';
-import { checkRisk } from '../core/risk.js';
+import { checkRisk, setSpellContext } from '../core/risk.js';
+import { resolveSkipClass, onSemesterEndSkip } from '../core/skipClass.js';
 import { renderAll, renderMapModal, renderCalendar } from './render.js';
 import { openNpcList } from './dialogue.js';
+import { CLUBS, CLUB_RANK_LABELS, canJoinClub, joinClub, leaveClub, getClubRankLabel } from '../data/clubs.js';
+import { CHAR } from '../core/character.js';
+import { tryTriggerEvent, openChoiceModal } from '../data/randomEvents.js';
 
 // 快捷动作
 function qa(id) {
@@ -31,6 +35,114 @@ export function openMap() {
 export function closeMap(e, force) {
   if (force || (e && e.target.id === 'map-mo'))
     document.getElementById('map-mo').classList.remove('open');
+}
+
+// ── 社团 Modal ────────────────────────────────────────────────
+
+function ensureClubModal() {
+  if (document.getElementById('club-mo')) return;
+  const mo = document.createElement('div');
+  mo.id = 'club-mo';
+  mo.className = 'mo';
+  mo.innerHTML = `
+    <div class="mb" style="max-width:460px;">
+      <button class="mc-btn" id="club-close-btn">✕</button>
+      <div class="mt-m">社团</div>
+      <div class="ms-m" id="club-mo-sub"></div>
+      <div id="club-mo-body" style="max-height:58vh;overflow-y:auto;padding-right:4px;"></div>
+    </div>`;
+  document.body.appendChild(mo);
+  document.getElementById('club-close-btn').addEventListener('click', closeClubMo);
+  mo.addEventListener('click', e => { if (e.target === mo) closeClubMo(); });
+}
+
+export function openClubMo() {
+  ensureClubModal();
+  renderClubMo();
+  document.getElementById('club-mo').classList.add('open');
+}
+
+export function closeClubMo() {
+  const mo = document.getElementById('club-mo');
+  if (mo) mo.classList.remove('open');
+}
+
+function renderClubMo() {
+  if (!G.clubs) G.clubs = [];
+  if (!G.clubRank) G.clubRank = {};
+  const joined = G.clubs;
+  const sub = document.getElementById('club-mo-sub');
+  const body = document.getElementById('club-mo-body');
+  if (sub) sub.textContent = `本学期已加入 ${joined.length}/2 个社团`;
+
+  const statLabel = { int:'智力', mag:'法力', phy:'体魄', cha:'魅力', sen:'感知' };
+
+  body.innerHTML = Object.values(CLUBS).map(club => {
+    const isJoined = joined.includes(club.id);
+    const eligible = canJoinClub(club.id, G, CHAR);
+    const full     = !isJoined && joined.length >= 2;
+    const rank     = isJoined ? CLUB_RANK_LABELS[Math.min(G.clubRank[club.id] ?? 0, 3)] : null;
+
+    // 条件文字
+    const reqParts = [];
+    if (club.joinReq.race) reqParts.push(`种族：混血裔`);
+    for (const [k, v] of Object.entries(club.joinReq)) {
+      if (k === 'race') continue;
+      const cur = G.stats[k] ?? 0;
+      reqParts.push(`${statLabel[k] || k} ≥ ${v}（当前 ${cur}）`);
+    }
+    if (!reqParts.length) reqParts.push('无门槛');
+
+    const btnDisabled = !isJoined && (!eligible || full);
+    const btnText = isJoined ? '退出社团' : (full ? '已满' : (!eligible ? '条件不足' : '加入'));
+    const btnCls  = isJoined ? 'abtn dng' : (btnDisabled ? 'abtn' : 'abtn pri');
+
+    return `
+      <div style="border:1px solid var(--bd);border-radius:6px;padding:10px 12px;margin-bottom:8px;background:var(--bg);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:11px;font-weight:600;color:var(--tx);">${club.name}
+              ${isJoined ? `<span style="font-size:9px;color:var(--gold);margin-left:4px;">${rank}</span>` : ''}
+            </div>
+            <div style="font-size:8px;color:var(--tx3);margin:2px 0;">${club.sub}</div>
+            <div style="font-size:9px;color:var(--tx2);margin:4px 0 2px;">${club.desc}</div>
+            <div style="font-size:8px;color:var(--tx3);">
+              加入条件：${reqParts.join('，')}
+            </div>
+            ${club.perk ? `<div style="font-size:8px;color:var(--gold);margin-top:2px;">✦ ${club.perk}</div>` : ''}
+            <div style="font-size:8px;color:var(--tx3);margin-top:2px;">
+              提升属性：${club.statGain.map(k => statLabel[k] || k).join('、')}
+            </div>
+          </div>
+          <button class="${btnCls}" style="flex-shrink:0;min-width:56px;padding:5px 8px;font-size:9px;"
+            ${btnDisabled ? 'disabled' : ''}
+            onclick="${isJoined ? `doLeaveClub('${club.id}')` : `doJoinClub('${club.id}')`}">
+            ${btnText}
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+export function doJoinClub(clubId) {
+  const result = joinClub(clubId, G, CHAR);
+  if (result.ok) {
+    pushNarr([`你向${CLUBS[clubId].name}递交了申请，正式成为新成员。`]);
+    pushEvt(`加入社团：${CLUBS[clubId].name}`, `当前社团 ${G.clubs.length}/2`);
+  } else {
+    pushEvt('无法加入', result.reason);
+  }
+  renderClubMo();
+  setBtns('free');
+}
+
+export function doLeaveClub(clubId) {
+  const name = CLUBS[clubId]?.name || clubId;
+  leaveClub(clubId, G);
+  pushNarr([`你离开了${name}。`]);
+  pushEvt(`退出社团：${name}`, `当前社团 ${G.clubs.length}/2`);
+  renderClubMo();
+  setBtns('free');
 }
 
 // 前往地点
@@ -188,31 +300,84 @@ const A = {
 
 A.skip_class.exec = function() {
   addDiv();
-  const chance = 0.15; // 基础概率
-  const caught = Math.random() < chance;
-  if (caught) {
-    // 不同种族有不同的被发现方式
-    let caught_text = '你被发现了。';
-    pushNarr([`你悄悄向后门移动……`, caught_text]);
-    G.viol++;
-    // 被抓回座位：计入出勤但扣平时分
-    const cc = todayCourse();
+  const cc = todayCourse();
+
+  // S3：种族修正翘课判定
+  const OUTDOOR_LOCS = ['horti', 'campus', 'ambul', 'via'];
+  const ctx = resolveSkipClass(G, {
+    raceKey:     CHAR.race,
+    personality: cc?.professor?.personality ?? 'normal',
+    isNight:     G.period >= 3,
+    isOutdoor:   OUTDOOR_LOCS.includes(G.locKey),
+  });
+
+  if (ctx.detected && ctx.result === 'caught') {
+    // 正常被抓
+    const punishNote = ctx.punishDowngrade ? '（龙息威慑：惩罚降一级）' : '';
+    pushNarr([`你悄悄向后门移动……`, `你被发现了。${punishNote}`]);
+    if (!ctx.punishDowngrade) G.viol++;  // 降级时不计违纪
     if (cc) {
       initCourseProgress(cc.name);
       G.courseProgress[cc.name].attended++;
-      // 不加 regular points（被抓惩罚）
     }
-    pushEvt(`被发现！（基础概率${Math.round(chance*100)}%）`,`违纪记录 +1，强制返回。出勤 ${cc ? G.courseProgress[cc.name].attended+'/'+G.courseProgress[cc.name].total : '—'}`);
-    renderAll();
-    autoSave();
+    pushEvt(
+      `被发现！（概率 ${Math.round(ctx.finalChance * 100)}%）`,
+      `违纪记录 ${ctx.punishDowngrade ? '不计入' : '+1'}，强制返回。出勤 ${cc ? G.courseProgress[cc.name].attended+'/'+G.courseProgress[cc.name].total : '—'}`
+    );
+    renderAll(); autoSave();
     setTimeout(() => setBtns('class'), 200);
+
+  } else if (ctx.detected && ctx.result === 'ignored') {
+    // 被发现但化解（吸血鬼摄魄之眼 / 半身人好运波动）
+    pushNarr([`你悄悄向后门移动……`, getNarrativeDesc(ctx.narrativeTag, 'ignored')]);
+    pushEvt('侥幸脱身', '被注意到了，但对方没有追究。');
+    travelTo('via');
+    setTimeout(() => setBtns('free'), 200);
+
+  } else if (ctx.detected && ctx.result === 'escaped') {
+    // 兽人魔法反制逃脱
+    pushNarr([`你悄悄向后门移动……`, getNarrativeDesc(ctx.narrativeTag, 'escaped')]);
+    pushEvt('强行逃脱', '阻拦被你魔法反制，成功离开。出勤 -1。');
+    travelTo('via');
+    setTimeout(() => setBtns('free'), 200);
+
   } else {
+    // 未被发现
     pushNarr([`走廊里空无一人。你成功溜出来了——${G.loc}的风吹散了课堂的紧张感。`]);
-    pushEvt('翘课成功。','上午可自由活动，出勤 -1（影响平时分）。');
+    pushEvt('翘课成功。', `上午可自由活动，出勤 -1（影响平时分）。概率 ${Math.round(ctx.finalChance * 100)}%`);
     travelTo('via');
     setTimeout(() => setBtns('free'), 200);
   }
+
+  // 矮人沉石礼
+  if (ctx.triggerStoneRite) {
+    pushEvt('沉石礼触发', '连续三次翘课，古礼启动，消耗了一段时间。');
+    G.period = Math.min(G.period + 1, 4);
+  }
+
+  // 混血裔身份暴露
+  if (ctx.triggerIdentityExpose) {
+    pushEvt('身份暴露', '族裔特征在紧张时刻显现，引起了注意。');
+    G.viol++;
+  }
+
+  renderAll(); autoSave();
 };
+
+// 翘课叙事描述映射
+function getNarrativeDesc(tag, outcome) {
+  const MAP = {
+    elf_glow:          { caught:   '紧张之下，你的皮肤泛起淡淡光晕，暴露了你的行踪。' },
+    vampire_mesmerize: { ignored:  '你的眼神与教授短暂交汇——对方若有所思，随即移开视线。' },
+    dwarf_stone_rite:  { caught:   '第三次翘课，族中古礼「沉石礼」悄然启动。' },
+    merfolk_scale_day: { caught:   '日光下，你颈侧的鳞光折射引来了不必要的目光。' },
+    orc_counter:       { escaped:  '你施展魔法反制，强行打断了阻拦，扬长而去。' },
+    halfling_luck:     { ignored:  '幸运女神眷顾，对方恰好被别的事情分散了注意力。' },
+    dragonborn_deter:  { caught:   '你低沉地吐出一口带有龙威的气息，对方下意识退后，惩罚降了一级。' },
+    halfblood_expose:  { caught:   '族裔特征在紧张时刻不受控制地显现，引起了注意。' },
+  };
+  return MAP[tag]?.[outcome] ?? '';
+}
 
 // 执行动作
 export function act(id) {
@@ -235,7 +400,15 @@ export function act(id) {
   
   renderAll();
   autoSave();
-  setTimeout(() => setBtns(a.nx || 'class'), 200);
+  setTimeout(() => {
+    setBtns(a.nx || 'class');
+    // 随机事件检定（自由时间行动后）
+    if ((a.nx || 'class') === 'free') {
+      tryTriggerEvent('action', pushNarr, pushEvt,
+        (evt) => openChoiceModal(evt, pushNarr, pushEvt, () => { renderAll(); setBtns('free'); })
+      );
+    }
+  }, 200);
 }
 
 // 设置按钮
@@ -251,11 +424,13 @@ export function setBtns(type) {
       <button class="abtn dng" onclick="act('skip_class')">偷偷离开教室<span class="hk">4</span></button>`;
   } else {
     ctx.textContent = `当前情境：${PERIODS[G.period]} · ${G.loc} · 自由时间`;
+    const clubCount = (G.clubs || []).length;
     btns.innerHTML = `
       <button class="abtn pri" onclick="advTime()">推进到下一时间段<span class="hk">↵</span></button>
       <button class="abtn" onclick="act('rest')">小憩 (SP+10)<span class="hk">2</span></button>
       <button class="abtn" onclick="openMap()">查看地图<span class="hk">3</span></button>
-      <button class="abtn" onclick="qa('npc')">寻找附近学生<span class="hk">4</span></button>`;
+      <button class="abtn" onclick="qa('npc')">寻找附近学生<span class="hk">4</span></button>
+      <button class="abtn" onclick="openClubMo()">社团（${clubCount}/2）<span class="hk">5</span></button>`;
   }
 }
 
@@ -265,7 +440,13 @@ export function advTime() {
   if (G.period >= 5) {
     G.period = 0; G.day++;
     if (G.day >= 5) { G.day = 0; G.week++; }
-    if (G.week > 16) { G.week = 1; G.sem = (G.sem+1)%4; }
+    if (G.week > 16) {
+      G.week = 1;
+      G.sem = (G.sem + 1) % 4;
+      G.semestersPassed = (G.semestersPassed ?? 0) + 1;
+      // S3：重置翘课系统限次机制（龙裔龙息威慑等）
+      onSemesterEndSkip(G, CHAR.race);
+    }
     G.sp = G.spMax; G.mp = G.mpMax; G.hp = G.hpMax;
     // 回到宿舍
     G.locKey = 'mentis_d';
@@ -278,6 +459,12 @@ export function advTime() {
   pushBanner();
   const c = todayCourse();
   setBtns(c ? 'class' : 'free');
+  // 随机事件检定（推进时）
+  if (!c) {
+    tryTriggerEvent('advance', pushNarr, pushEvt,
+      (evt) => openChoiceModal(evt, pushNarr, pushEvt, () => { renderAll(); setBtns('free'); })
+    );
+  }
 }
 
 // 推送横幅

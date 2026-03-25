@@ -1,6 +1,7 @@
 import { CHAR } from './character.js';
 import { DEPTS } from '../data/departments.js';
 import { COMMON_COURSES } from '../data/departments.js';
+import { buildInitialRepute } from './achievements.js';
 
 // 时间相关常量
 export const PERIODS  = ['清晨','上午','下午','傍晚','夜间'];
@@ -51,13 +52,47 @@ export const G = {
   locKey: CHAR.dept + '_d',
   stats: { ...CHAR.stats },
   exp: { int: 0, mag: 0, phy: 0, cha: 0, sen: 0 }, // 属性经验值
-  repute: { [CHAR.dept]: 0 },  // 各学部声望 -100~100
+
+  // ── 声望 ────────────────────────────────────────────────────────────
+  // 多学部声望，由 buildInitialRepute 根据角色所属学部自动生成初始值
+  // 结构：{ deptKey: number(-100~100) }
+  repute: buildInitialRepute(CHAR.dept),
+
+  // ── 课程 ────────────────────────────────────────────────────────────
   attendance: {},               // 课程出勤率（兼容旧存档）
   courseProgress: {},           // {courseName: {attended,total,regular,examScore,finalScore,grade,makeupScore,makeupDone}}
   examsDone: { midterm: false, final: false },
-  riskLevel: 0, // 失控风险等级 0-100
-  relations: {},      // NPC好感度 { npcId: number(-100~100) }
-  dialogueFlags: {},  // 对话触发标记 { flagKey: true }
+
+  // ── 风险 ────────────────────────────────────────────────────────────
+  riskLevel: 0,                 // 失控风险等级 0-100
+  _riskSurvived: false,         // 高风险存活标记（隐藏成就用）
+
+  // ── 社交 ────────────────────────────────────────────────────────────
+  relations: {},                // NPC好感度 { npcId: number(-100~100) }
+  dialogueFlags: {},            // 对话/状态触发标记 { flagKey: true }
+  clubs: [],                    // 本学期已加入的社团 id 列表（上限2）
+  clubRank: {},                 // 社团等级 { clubId: 0~3 } 0=新成员 1=正式 2=骨干 3=社长候选
+
+  // ── 探索 ────────────────────────────────────────────────────────────
+  visitedLocs: [],              // 已访问地点键列表（探索成就用）
+  nightOutCount: 0,             // 夜间外出次数（夜枭成就用）
+
+  // ── 成就 ────────────────────────────────────────────────────────────
+  achievements: {},             // { achId: true } 已解锁成就集合
+  achTitles: [],                // 已解锁称号列表
+  activeTitle: null,            // 当前使用的称号
+  achItems: [],                 // 通过成就获得的道具键列表
+  _reputeStarted: null,         // 声望初始快照（化敌为友成就用，由 initAchievements 填充）
+
+  // ── 魔法 ────────────────────────────────────────────────────────────
+  learnedSpells: {},            // { spellId: profExp }  已习得魔法及其熟练度经验
+
+  // ── 道具 & 背包 ─────────────────────────────────────────────────────
+  bag: {},                      // { itemId: qty }  背包内容，上限30格（BAG_CAP）
+
+  // ── 经济追踪 ─────────────────────────────────────────────────────────
+  ecoTrack: {},                 // 经济系统追踪数据，如水晶本学期已获量
+                                // key 格式：crystal_earned_sem_{semIndex}_0
 };
 
 // 课程表

@@ -600,3 +600,42 @@ button { font-family: inherit; cursor: pointer; }
   width:1px; height:100%; background:var(--bd2);
 }
 .rel-card-score { font-size:8px; font-style:italic; text-align:right; }
+
+/* ── 魔法亲和面板（S2.2）──────────────────────────────────── */
+.aff-row {
+  display:flex; align-items:flex-start; gap:6px;
+  margin-bottom:5px;
+}
+.aff-label {
+  font-size:8px; color:var(--tx3);
+  min-width:44px; padding-top:2px;
+  white-space:nowrap;
+}
+.aff-tags {
+  display:flex; flex-wrap:wrap; gap:3px;
+}
+.aff-tag {
+  display:inline-block;
+  font-size:8px; font-weight:500;
+  padding:1px 6px; border-radius:10px;
+  line-height:16px;
+}
+/* 固有亲和：只读灰色 */
+.aff-innate {
+  background:var(--ac);
+  color:var(--tx3);
+  border:1px solid var(--bd);
+  cursor:default;
+}
+/* 自选亲和：金色高亮 */
+.aff-elective {
+  background:color-mix(in srgb,var(--gold) 12%,transparent);
+  color:var(--gold);
+  border:1px solid color-mix(in srgb,var(--gold) 30%,transparent);
+}
+/* 空状态 */
+.aff-none {
+  color:var(--tx3); font-style:italic;
+  background:transparent; border:none;
+  padding-left:0;
+}

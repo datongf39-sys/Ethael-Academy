@@ -21,7 +21,7 @@
 <!-- ===== DESKTOP TOPBAR ===== -->
 <div id="topbar">
   <div class="tb-logo">
-<img src="docs/校徽透明版.png" class="tb-logo-icon" alt="伊瑟尔学院校徽" />
+<img src="assets/校徽透明版.png" class="tb-logo-icon" alt="伊瑟尔学院校徽" />
     <div class="tb-logo-text">
       <span class="t1">伊瑟尔学院</span>
       <span class="t2">Ethael Academy</span>
@@ -105,7 +105,7 @@
 
 <!-- ===== MOBILE TOP BAR ===== -->
 <div id="mtb">
-<img src="docs/校徽透明版.png" class="tb-logo-icon" alt="伊瑟尔学院校徽" />
+<img src="assets/校徽透明版.png" class="tb-logo-icon" alt="伊瑟尔学院校徽" />
   <div class="mtb-title" id="mtb-date">秋季·第3周·周二</div>
   <div class="mtb-per"><div class="pdot"></div><span id="mtb-per">上午</span></div>
   <button class="icon-btn" onclick="toggleNfp()" style="margin-left:6px;">
@@ -212,6 +212,11 @@
       <div class="ps">
         <div class="psl">能力值</div>
         <div class="ag" id="stat-grid"></div>
+      </div>
+      <div class="gdiv"></div>
+      <div class="ps">
+        <div class="psl">魔法亲和</div>
+        <div id="affinity-panel"></div>
       </div>
       <div class="gdiv"></div>
       <div class="ps">
@@ -336,9 +341,9 @@
     <div class="hs"><span class="hs-n">魔力水晶 Crystallum</span><span class="hs-v" style="color:var(--mp)">3</span></div>
     <div class="gdiv" style="margin:14px 0;"></div>
     <div class="psl" style="margin-top:14px;">存档</div>
-    <button onclick="manualSave();updateSaveInfo()" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;font-weight:500;margin-bottom:7px;">保存当前进度</button>
-    <button onclick="openSaveMo();closeMM('mm-set')" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;margin-bottom:7px;">读取 / 导出 / 导入存档</button>
-    <button onclick="exportSave()" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;">导出存档文件 (.json)</button>
+    <button onclick="doSaveToSlot(1);closeMM('mm-set')" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;font-weight:500;margin-bottom:7px;">保存至槽位 1</button>
+    <button onclick="openSaveMo();closeMM('mm-set')" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;margin-bottom:7px;">存档管理 / 读取 / 导出</button>
+    <button onclick="doImportSave()" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;">导入存档文件 (.isv)</button>
   </div>
 </div>
 
@@ -368,18 +373,13 @@
 
 <!-- ===== SAVE MODAL ===== -->
 <div class="mo" id="save-mo" onclick="closeSaveMo(event)">
-  <div class="mb" style="max-width:360px;">
+  <div class="mb" style="max-width:420px;">
     <button class="mc-btn" onclick="closeSaveMo(null,1)">✕</button>
     <div class="mt-m">存档 · Archive</div>
-    <div class="ms-m">游戏进度保存在本设备浏览器中</div>
-    <div id="save-info"></div>
-    <div style="display:grid;gap:7px;">
-      <button onclick="manualSave();updateSaveInfo()" style="padding:9px;border-radius:5px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;font-weight:500;">保存当前进度</button>
-      <button onclick="doLoadSave()" style="padding:9px;border-radius:5px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">读取存档</button>
-      <div style="height:1px;background:linear-gradient(90deg,transparent,var(--gb2),transparent);margin:2px 0;"></div>
-      <button onclick="exportSave()" style="padding:9px;border-radius:5px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">导出存档文件 (.json)</button>
-      <button onclick="triggerImport()" style="padding:9px;border-radius:5px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.07em;cursor:pointer;">导入存档文件</button>
-      <input type="file" id="save-file-input" accept=".json" style="display:none" onchange="importSave(event)">
+    <div class="ms-m">游戏进度保存在本设备浏览器中 · 共3个存档槽</div>
+    <!-- 槽位列表由 renderSaveMo() 动态渲染 -->
+    <div id="save-mo-body" style="max-height:60vh;overflow-y:auto;padding-right:2px;">
+      <div style="font-size:9px;color:var(--tx3);padding:16px 0;text-align:center;">正在读取存档信息…</div>
     </div>
   </div>
 </div>
