@@ -56,6 +56,8 @@ export const G = {
   courseProgress: {},           // {courseName: {attended,total,regular,examScore,finalScore,grade,makeupScore,makeupDone}}
   examsDone: { midterm: false, final: false },
   riskLevel: 0, // 失控风险等级 0-100
+  relations: {},      // NPC好感度 { npcId: number(-100~100) }
+  dialogueFlags: {},  // 对话触发标记 { flagKey: true }
 };
 
 // 课程表

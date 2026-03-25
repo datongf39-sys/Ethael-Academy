@@ -2,6 +2,7 @@
 import { G, SCHEDULE } from './core/gameState.js';
 import { renderAll, renderCalendar } from './ui/render.js';
 import { act, setBtns, advTime, openMap, closeMap, openCal, closeCal, openSaveMo, closeSaveMo, toggleNfp, setTheme, colPanel, openMTab, closeMM, travelTo } from './ui/events.js';
+import { openDialogue, closeDialogue, dlgChoose, openNpcList, closeNpcList, renderRelGraph } from './ui/dialogue.js';
 
 // 全局变量
 globalThis.G = G;
@@ -21,6 +22,14 @@ globalThis.colPanel = colPanel;
 globalThis.openMTab = openMTab;
 globalThis.closeMM = closeMM;
 globalThis.travelTo = travelTo;
+
+// 对话系统
+globalThis.openDialogue  = openDialogue;
+globalThis.closeDialogue = closeDialogue;
+globalThis.dlgChoose     = dlgChoose;
+globalThis.openNpcList   = openNpcList;
+globalThis.closeNpcList  = closeNpcList;
+globalThis.renderRelGraph = renderRelGraph;
 
 // 初始化
 function init() {
