@@ -417,14 +417,6 @@
     if (el) { el.classList.add('active'); }
   }
 
-  // 读取存储的主题并立即应用，避免白屏闪烁
-  try {
-    var saved = localStorage.getItem('ethael_theme');
-    if (saved && THEMES.includes(saved)) {
-      document.body.setAttribute('data-theme', saved);
-    }
-  } catch (_) {}
-
   // 只在 globalThis 上尚未挂载时注册（模块加载成功后会被覆盖）
   if (typeof globalThis.setTheme === 'undefined') {
     globalThis.setTheme = setTheme;
