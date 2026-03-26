@@ -560,7 +560,7 @@ export async function importSave(file, slotKey = SLOT_KEYS[0]) {
 // ─────────────────────────────────────────────
 
 const DEFAULT_SETTINGS = {
-  theme     : 'dark',
+  theme     : 'pink',
   volume    : 0.8,
   sfxVolume : 0.6,
   textSpeed : 'normal',  // slow / normal / fast
