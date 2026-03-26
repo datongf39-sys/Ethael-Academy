@@ -94,6 +94,9 @@
       <div class="ndot" id="ndot"></div>
       <svg viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5C4 1.5 3 3.5 3 5.5v3L2 10h9L10 8.5V5.5C10 3.5 9 1.5 6.5 1.5Z" stroke="currentColor" stroke-width=".9"/><path d="M5 10Q5 12 6.5 12Q8 12 8 10" stroke="currentColor" stroke-width=".8"/></svg>
     </button>
+    <button class="icon-btn" onclick="openSettingsMo()" title="AI 叙述设置">
+      <svg viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" stroke-width=".85"/><path d="M6.5 1v1.2M6.5 10.8V12M1 6.5h1.2M10.8 6.5H12M2.4 2.4l.85.85M9.75 9.75l.85.85M9.75 3.25l-.85.85M3.25 9.75l-.85.85" stroke="currentColor" stroke-width=".85" stroke-linecap="round"/></svg>
+    </button>
     <div class="theme-sw">
       <div class="tbtn t-pink active" onclick="setTheme('pink',this)" title="粉金白"></div>
       <div class="tbtn t-dark"        onclick="setTheme('dark',this)" title="粉金黑"></div>
@@ -344,6 +347,12 @@
     <button onclick="doSaveToSlot(1);closeMM('mm-set')" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--gb2);background:var(--gold);color:#1A0800;font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;font-weight:500;margin-bottom:7px;">保存至槽位 1</button>
     <button onclick="openSaveMo();closeMM('mm-set')" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd2);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;margin-bottom:7px;">存档管理 / 读取 / 导出</button>
     <button onclick="doImportSave()" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;">导入存档文件 (.isv)</button>
+    <div class="gdiv" style="margin:14px 0;"></div>
+    <div class="psl">AI 叙述引擎</div>
+    <button onclick="openSettingsMo();closeMM('mm-set')" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx2);font-family:'Cinzel','Palatino Linotype',Georgia,serif;font-size:11px;letter-spacing:.08em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <svg viewBox="0 0 14 14" fill="none" width="13" height="13"><circle cx="7" cy="7" r="2.2" stroke="currentColor" stroke-width=".9"/><path d="M7 1.5v1.3M7 11.2v1.3M1.5 7h1.3M11.2 7h1.3M3 3l.9.9M10.1 10.1l.9.9M10.1 3l-.9.9M3.9 10.1L3 11" stroke="currentColor" stroke-width=".9" stroke-linecap="round"/></svg>
+      AI 叙述设置
+    </button>
   </div>
 </div>
 
@@ -396,42 +405,10 @@
   </div>
 </div>
 
-<!-- ===== 内联降级脚本：模块加载失败时仍可用 =====
-     模块若正常加载，globalThis.setTheme 会被 events.js 的版本覆盖；
-     若任一依赖模块报错导致模块链中断，这里的版本兜底，保证主题切换可用。 -->
-<script>
-(function () {
-  const THEMES = ['pink', 'dark', 'blue', 'warm'];
-
-  function setTheme(theme, el) {
-    if (!THEMES.includes(theme)) return;
-    document.body.setAttribute('data-theme', theme);
-    document.querySelectorAll('.tbtn').forEach(function (b) {
-      b.classList.toggle('active',
-        b.classList.contains('t-' + theme) ||
-        b.getAttribute('onclick') === "setTheme('" + theme + "',this)"
-      );
-    });
-    try { localStorage.setItem('ethael_theme', theme); } catch (_) {}
-    // 供 globalThis 版本覆盖前的临时挂载
-    if (el) { el.classList.add('active'); }
-  }
-
-  // 只在 globalThis 上尚未挂载时注册（模块加载成功后会被覆盖）
-  if (typeof globalThis.setTheme === 'undefined') {
-    globalThis.setTheme = setTheme;
-  }
-
-  // 模块加载完毕后再判断一次，确保 events.js 版本优先
-  window.addEventListener('load', function () {
-    if (typeof globalThis.setTheme === 'undefined') {
-      globalThis.setTheme = setTheme;
-    }
-  });
-})();
-</script>
-
 <script type="module" src="js/main.js"></script>
+<script>
+// 已迁移到外部模块
+</script>
 <div id="save-toast"></div>
 </body>
 </html>
