@@ -1,7 +1,8 @@
 // 主入口文件
 import { G, SCHEDULE } from './core/gameState.js';
 import { renderAll, renderCalendar } from './ui/render.js';
-import { act, setBtns, advTime, openMap, closeMap, openCal, closeCal, openSaveMo, closeSaveMo, toggleNfp, setTheme, colPanel, openMTab, closeMM, travelTo, openClubMo, closeClubMo, doJoinClub, doLeaveClub } from './ui/events.js';
+import { act, setBtns, advTime, openMap, closeMap, openCal, closeCal, openSaveMo, closeSaveMo, toggleNfp, setTheme, colPanel, openMTab, closeMM, travelTo, openClubMo, closeClubMo, doJoinClub, doLeaveClub, openSettingsMo, closeSettingsMo } from './ui/events.js';
+import { getLLMConfig, saveLLMConfig } from './core/llm.js';
 import { openDialogue, closeDialogue, dlgChoose, openNpcList, closeNpcList, renderRelGraph } from './ui/dialogue.js';
 import { saveGame, loadGame, deleteGame, autoSave, getSlotInfos, exportSave, importSave, loadSettings, saveSettings, SLOT_KEYS, AUTO_KEY } from './core/save.js';
 import { initAchievements } from './core/achievements.js';
@@ -30,6 +31,12 @@ globalThis.openClubMo  = openClubMo;
 globalThis.closeClubMo = closeClubMo;
 globalThis.doJoinClub  = doJoinClub;
 globalThis.doLeaveClub = doLeaveClub;
+
+// ── 全局暴露：AI 设置 ───────────────────────────
+globalThis.openSettingsMo  = openSettingsMo;
+globalThis.closeSettingsMo = closeSettingsMo;
+globalThis.saveLLMConfig   = saveLLMConfig;
+globalThis.getLLMConfig    = getLLMConfig;
 
 // ── 全局暴露：对话系统 ──────────────────────────
 globalThis.openDialogue   = openDialogue;
