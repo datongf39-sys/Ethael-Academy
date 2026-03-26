@@ -396,10 +396,50 @@
   </div>
 </div>
 
-<script type="module" src="js/main.js"></script>
+<!-- ===== 内联降级脚本：模块加载失败时仍可用 =====
+     模块若正常加载，globalThis.setTheme 会被 events.js 的版本覆盖；
+     若任一依赖模块报错导致模块链中断，这里的版本兜底，保证主题切换可用。 -->
 <script>
-// 已迁移到外部模块
+(function () {
+  const THEMES = ['pink', 'dark', 'blue', 'warm'];
+
+  function setTheme(theme, el) {
+    if (!THEMES.includes(theme)) return;
+    document.body.setAttribute('data-theme', theme);
+    document.querySelectorAll('.tbtn').forEach(function (b) {
+      b.classList.toggle('active',
+        b.classList.contains('t-' + theme) ||
+        b.getAttribute('onclick') === "setTheme('" + theme + "',this)"
+      );
+    });
+    try { localStorage.setItem('ethael_theme', theme); } catch (_) {}
+    // 供 globalThis 版本覆盖前的临时挂载
+    if (el) { el.classList.add('active'); }
+  }
+
+  // 读取存储的主题并立即应用，避免白屏闪烁
+  try {
+    var saved = localStorage.getItem('ethael_theme');
+    if (saved && THEMES.includes(saved)) {
+      document.body.setAttribute('data-theme', saved);
+    }
+  } catch (_) {}
+
+  // 只在 globalThis 上尚未挂载时注册（模块加载成功后会被覆盖）
+  if (typeof globalThis.setTheme === 'undefined') {
+    globalThis.setTheme = setTheme;
+  }
+
+  // 模块加载完毕后再判断一次，确保 events.js 版本优先
+  window.addEventListener('load', function () {
+    if (typeof globalThis.setTheme === 'undefined') {
+      globalThis.setTheme = setTheme;
+    }
+  });
+})();
 </script>
+
+<script type="module" src="js/main.js"></script>
 <div id="save-toast"></div>
 </body>
 </html>
