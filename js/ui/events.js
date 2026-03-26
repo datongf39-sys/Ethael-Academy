@@ -9,6 +9,11 @@ import { openNpcList } from './dialogue.js';
 import { CLUBS, CLUB_RANK_LABELS, canJoinClub, joinClub, leaveClub, getClubRankLabel } from '../data/clubs.js';
 import { CHAR } from '../core/character.js';
 import { tryTriggerEvent, openChoiceModal } from '../data/randomEvents.js';
+import { changeRel } from '../core/relationship.js';
+import { generateNarrative, buildSnapshot } from '../core/llm.js';
+
+// LLM 指令处理器（传给 generateNarrative）
+const LLM_HANDLERS = { changeRel, addExp };
 
 // 快捷动作
 function qa(id) {
@@ -127,8 +132,14 @@ function renderClubMo() {
 export function doJoinClub(clubId) {
   const result = joinClub(clubId, G, CHAR);
   if (result.ok) {
-    pushNarr([`你向${CLUBS[clubId].name}递交了申请，正式成为新成员。`]);
-    pushEvt(`加入社团：${CLUBS[clubId].name}`, `当前社团 ${G.clubs.length}/2`);
+    const club = CLUBS[clubId];
+    pushEvt(`加入社团：${club.name}`, `当前社团 ${G.clubs.length}/2`);
+    // LLM 叙述：加入社团
+    const snapshot = buildSnapshot(G, CHAR, `递交申请，加入${club.name}`, '社团系统');
+    generateNarrative(
+      snapshot, pushNarr, pushEvt, G, LLM_HANDLERS, CHAR,
+      [`你向${club.name}递交了申请，正式成为新成员。`]   // 降级文本
+    );
   } else {
     pushEvt('无法加入', result.reason);
   }
@@ -139,8 +150,13 @@ export function doJoinClub(clubId) {
 export function doLeaveClub(clubId) {
   const name = CLUBS[clubId]?.name || clubId;
   leaveClub(clubId, G);
-  pushNarr([`你离开了${name}。`]);
   pushEvt(`退出社团：${name}`, `当前社团 ${G.clubs.length}/2`);
+  // LLM 叙述：退出社团
+  const snapshot = buildSnapshot(G, CHAR, `离开${name}`, '社团系统');
+  generateNarrative(
+    snapshot, pushNarr, pushEvt, G, LLM_HANDLERS, CHAR,
+    [`你离开了${name}。`]
+  );
   renderClubMo();
   setBtns('free');
 }
@@ -153,14 +169,21 @@ export function travelTo(locKey) {
   G.loc = loc.name;
   closeMap(null, true);
   addDiv();
-  pushNarr([`你前往${loc.name}。${loc.desc}`]);
   renderAll();
   setBtns('free');
+
   // 更新侧边栏地点显示
   const lel = document.getElementById('lp-loc');
   if (lel) lel.textContent = loc.name;
   const lsub = document.getElementById('lp-loc-sub');
   if (lsub) lsub.textContent = loc.sub;
+
+  // LLM 叙述：移动到新地点
+  const snapshot = buildSnapshot(G, CHAR, `前往${loc.name}`, '移动');
+  generateNarrative(
+    snapshot, pushNarr, pushEvt, G, LLM_HANDLERS, CHAR,
+    [`你前往${loc.name}。${loc.desc}`]   // 降级文本
+  );
 }
 
 // 打开日历
@@ -214,12 +237,9 @@ export function colPanel(panelId, btnId, text1, text2) {
 
 // 打开移动设备标签
 export function openMTab(tab) {
-  // 关闭所有模态框
   document.querySelectorAll('.mm').forEach(mm => mm.classList.remove('open'));
-  // 打开指定模态框
   const mm = document.getElementById('mm-' + tab);
   if (mm) mm.classList.add('open');
-  // 更新按钮状态
   document.querySelectorAll('.mnav-btn').forEach(b => b.classList.remove('active'));
   const btn = document.getElementById('mn-' + tab);
   if (btn) btn.classList.add('active');
@@ -247,11 +267,18 @@ function initCourseProgress(courseName) {
   }
 }
 
-// 行动银行
+// ── 行动银行 ─────────────────────────────────────────────────
+//
+// 每个行动保留 n（静态文本）作为 LLM 不可用时的降级兜底。
+// LLM 可用时，generateNarrative 会接管叙述，静态文本不会显示。
+
 const A = {
   take_notes: {
-    get n() { return [`你专心听讲，笔尖快速划过笔记本。感知值${G.stats.sen}让你精准捕捉到教授的每一个重点。`]; },
-    e:['认真听讲！','智力经验 +0.3，法力经验 +0.2，出勤 +1，MP -5。'], nx:'class', mp:5,
+    get n() {
+      return [`你专心听讲，笔尖快速划过笔记本。感知值${G.stats.sen}让你精准捕捉到教授的每一个重点。`];
+    },
+    e: ['认真听讲！', '智力经验 +0.3，法力经验 +0.2，出勤 +1，MP -5。'],
+    nx: 'class', mp: 5,
     exec() {
       addExp('int', 0.3, G);
       addExp('mag', 0.2, G);
@@ -264,12 +291,17 @@ const A = {
       G.mp -= 5;
     }
   },
+
   ask_question: {
     get n() {
       const c = todayCourse();
-      return [`「教授，关于${c ? c.name : '这节课'}的内容我有一个疑问——」`,`教授停顿了一下，给出了详细的解答。`];
+      return [
+        `「教授，关于${c ? c.name : '这节课'}的内容我有一个疑问——」`,
+        `教授停顿了一下，给出了详细的解答。`
+      ];
     },
-    e:['主动提问！','好感度 +3，平时分 +0.5，智力 +0.1。'], nx:'class', mp:3,
+    e: ['主动提问！', '好感度 +3，平时分 +0.5，智力 +0.1。'],
+    nx: 'class', mp: 3,
     exec() {
       addExp('int', 0.1, G);
       const cc = todayCourse();
@@ -280,71 +312,100 @@ const A = {
       G.mp -= 3;
     }
   },
+
   chat_classmate: {
-    n:['你悄悄凑近旁边的同学，低声交流了一下笔记。','教授的目光扫过来，你们同时低下头。'],
-    e:['与同学互动。','好感度 +2，被注意但忽视。'], nx:'class', mp:1,
+    n: ['你悄悄凑近旁边的同学，低声交流了一下笔记。', '教授的目光扫过来，你们同时低下头。'],
+    e: ['与同学互动。', '好感度 +2，被注意但忽视。'],
+    nx: 'class', mp: 1,
     exec() {
       addExp('cha', 0.1, G);
       G.mp -= 1;
     }
   },
+
   rest: {
-    get n() { return [`你在${G.loc}找了处安静的地方坐下，闭目休息片刻。银叶大道的风声让人心神安定。`]; },
-    e:['小憩完成。','SP +10，消耗约30分钟。'], nx:'free', sp:10,
+    get n() {
+      return [`你在${G.loc}找了处安静的地方坐下，闭目休息片刻。银叶大道的风声让人心神安定。`];
+    },
+    e: ['小憩完成。', 'SP +10，消耗约30分钟。'],
+    nx: 'free', sp: 10,
     exec() {
       G.sp = Math.min(G.sp + 10, G.spMax);
     }
   },
+
   skip_class: { custom: true }
 };
+
+// ── 翘课逻辑 ─────────────────────────────────────────────────
 
 A.skip_class.exec = function() {
   addDiv();
   const cc = todayCourse();
 
-  // S3：种族修正翘课判定
   const OUTDOOR_LOCS = ['horti', 'campus', 'ambul', 'via'];
   const ctx = resolveSkipClass(G, {
-    raceKey:     CHAR.race,
-    personality: cc?.professor?.personality ?? 'normal',
-    isNight:     G.period >= 3,
-    isOutdoor:   OUTDOOR_LOCS.includes(G.locKey),
+    raceKey     : CHAR.race,
+    personality : cc?.professor?.personality ?? 'normal',
+    isNight     : G.period >= 3,
+    isOutdoor   : OUTDOOR_LOCS.includes(G.locKey),
   });
 
   if (ctx.detected && ctx.result === 'caught') {
-    // 正常被抓
+    // 被抓
     const punishNote = ctx.punishDowngrade ? '（龙息威慑：惩罚降一级）' : '';
-    pushNarr([`你悄悄向后门移动……`, `你被发现了。${punishNote}`]);
-    if (!ctx.punishDowngrade) G.viol++;  // 降级时不计违纪
+    if (!ctx.punishDowngrade) G.viol++;
     if (cc) {
       initCourseProgress(cc.name);
       G.courseProgress[cc.name].attended++;
     }
     pushEvt(
       `被发现！（概率 ${Math.round(ctx.finalChance * 100)}%）`,
-      `违纪记录 ${ctx.punishDowngrade ? '不计入' : '+1'}，强制返回。出勤 ${cc ? G.courseProgress[cc.name].attended+'/'+G.courseProgress[cc.name].total : '—'}`
+      `违纪记录 ${ctx.punishDowngrade ? '不计入' : '+1'}，强制返回。出勤 ${cc ? G.courseProgress[cc.name].attended + '/' + G.courseProgress[cc.name].total : '—'}`
+    );
+    // LLM 叙述：被抓
+    const narrativeTag = ctx.narrativeTag;
+    const fallbackCaught = [
+      '你悄悄向后门移动……',
+      getNarrativeDesc(narrativeTag, 'caught') || `你被发现了。${punishNote}`
+    ];
+    generateNarrative(
+      buildSnapshot(G, CHAR, `翘课被抓${punishNote}`, `${PERIODS[G.period]} · ${cc?.name ?? G.loc}`),
+      pushNarr, pushEvt, G, LLM_HANDLERS, CHAR, fallbackCaught
     );
     renderAll(); autoSave();
     setTimeout(() => setBtns('class'), 200);
 
   } else if (ctx.detected && ctx.result === 'ignored') {
-    // 被发现但化解（吸血鬼摄魄之眼 / 半身人好运波动）
-    pushNarr([`你悄悄向后门移动……`, getNarrativeDesc(ctx.narrativeTag, 'ignored')]);
+    // 被发现但化解
     pushEvt('侥幸脱身', '被注意到了，但对方没有追究。');
+    generateNarrative(
+      buildSnapshot(G, CHAR, '翘课侥幸脱身', `${PERIODS[G.period]} · ${cc?.name ?? G.loc}`),
+      pushNarr, pushEvt, G, LLM_HANDLERS, CHAR,
+      ['你悄悄向后门移动……', getNarrativeDesc(ctx.narrativeTag, 'ignored')]
+    );
     travelTo('via');
     setTimeout(() => setBtns('free'), 200);
 
   } else if (ctx.detected && ctx.result === 'escaped') {
-    // 兽人魔法反制逃脱
-    pushNarr([`你悄悄向后门移动……`, getNarrativeDesc(ctx.narrativeTag, 'escaped')]);
+    // 兽人反制逃脱
     pushEvt('强行逃脱', '阻拦被你魔法反制，成功离开。出勤 -1。');
+    generateNarrative(
+      buildSnapshot(G, CHAR, '翘课强行反制逃脱', `${PERIODS[G.period]} · ${cc?.name ?? G.loc}`),
+      pushNarr, pushEvt, G, LLM_HANDLERS, CHAR,
+      ['你悄悄向后门移动……', getNarrativeDesc(ctx.narrativeTag, 'escaped')]
+    );
     travelTo('via');
     setTimeout(() => setBtns('free'), 200);
 
   } else {
-    // 未被发现
-    pushNarr([`走廊里空无一人。你成功溜出来了——${G.loc}的风吹散了课堂的紧张感。`]);
+    // 成功翘课
     pushEvt('翘课成功。', `上午可自由活动，出勤 -1（影响平时分）。概率 ${Math.round(ctx.finalChance * 100)}%`);
+    generateNarrative(
+      buildSnapshot(G, CHAR, '翘课成功，溜出教室', `${PERIODS[G.period]} · ${cc?.name ?? G.loc}`),
+      pushNarr, pushEvt, G, LLM_HANDLERS, CHAR,
+      [`走廊里空无一人。你成功溜出来了——${G.loc}的风吹散了课堂的紧张感。`]
+    );
     travelTo('via');
     setTimeout(() => setBtns('free'), 200);
   }
@@ -364,7 +425,7 @@ A.skip_class.exec = function() {
   renderAll(); autoSave();
 };
 
-// 翘课叙事描述映射
+// 翘课叙事描述映射（降级文本用）
 function getNarrativeDesc(tag, outcome) {
   const MAP = {
     elf_glow:          { caught:   '紧张之下，你的皮肤泛起淡淡光晕，暴露了你的行踪。' },
@@ -379,30 +440,49 @@ function getNarrativeDesc(tag, outcome) {
   return MAP[tag]?.[outcome] ?? '';
 }
 
-// 执行动作
+// ── 执行动作 ──────────────────────────────────────────────────
+
 export function act(id) {
   const a = A[id];
   if (!a) return;
-  if (a.custom) { if(a.exec) a.exec(); return; }
+
+  // 自定义行动（翘课等）走自己的逻辑
+  if (a.custom) { if (a.exec) a.exec(); return; }
 
   addDiv();
-  const narr = typeof a.n === 'function' ? a.n() : (Array.isArray(a.n) ? a.n : [a.n]);
-  pushNarr(narr);
+
+  // 推送事件卡
   pushEvt(a.e[0], a.e[1]);
-  
-  // 执行动作的逻辑
-  if (a.exec) {
-    a.exec();
-  }
-  
+
+  // 执行数值逻辑
+  if (a.exec) a.exec();
+
   // 检查失控风险
   checkRisk(G);
-  
+
   renderAll();
   autoSave();
+
+  // LLM 叙述（异步，不阻塞主流程）
+  const c = todayCourse();
+  const context     = c ? `${PERIODS[G.period]} · ${c.name}` : `${PERIODS[G.period]} · ${G.loc}`;
+  const actionLabel = {
+    take_notes    : '认真听课做笔记',
+    ask_question  : '向教授提问',
+    chat_classmate: '与同学低声聊天',
+    rest          : '在当前地点小憩',
+  }[id] || id;
+
+  // 静态文本作为降级兜底
+  const fallback = typeof a.n === 'function' ? a.n() : (Array.isArray(a.n) ? a.n : [a.n]);
+
+  generateNarrative(
+    buildSnapshot(G, CHAR, actionLabel, context),
+    pushNarr, pushEvt, G, LLM_HANDLERS, CHAR, fallback
+  );
+
   setTimeout(() => {
     setBtns(a.nx || 'class');
-    // 随机事件检定（自由时间行动后）
     if ((a.nx || 'class') === 'free') {
       tryTriggerEvent('action', pushNarr, pushEvt,
         (evt) => openChoiceModal(evt, pushNarr, pushEvt, () => { renderAll(); setBtns('free'); })
@@ -434,7 +514,8 @@ export function setBtns(type) {
   }
 }
 
-// 推进时间
+// ── 推进时间 ──────────────────────────────────────────────────
+
 export function advTime() {
   G.period++;
   if (G.period >= 5) {
@@ -444,7 +525,6 @@ export function advTime() {
       G.week = 1;
       G.sem = (G.sem + 1) % 4;
       G.semestersPassed = (G.semestersPassed ?? 0) + 1;
-      // S3：重置翘课系统限次机制（龙裔龙息威慑等）
       onSemesterEndSkip(G, CHAR.race);
     }
     G.sp = G.spMax; G.mp = G.mpMax; G.hp = G.hpMax;
@@ -452,14 +532,29 @@ export function advTime() {
     G.locKey = 'mentis_d';
     G.loc = '梦蝶楼';
   }
+
   renderAll();
   autoSave();
   renderCalendar();
   addDiv();
   pushBanner();
+
   const c = todayCourse();
+
+  // LLM 叙述：时间段过渡
+  const context     = `推进时间 · ${PERIODS[G.period]}`;
+  const actionLabel = c ? `进入${c.name}课堂` : `${G.loc}自由时间`;
+  const fallback    = c
+    ? [`${PERIODS[G.period]}的钟声响起，新的课程即将开始。`]
+    : [`时光悄悄流逝，${G.loc}等待着你的下一步。`];
+
+  generateNarrative(
+    buildSnapshot(G, CHAR, actionLabel, context),
+    pushNarr, pushEvt, G, LLM_HANDLERS, CHAR, fallback
+  );
+
   setBtns(c ? 'class' : 'free');
-  // 随机事件检定（推进时）
+
   if (!c) {
     tryTriggerEvent('advance', pushNarr, pushEvt,
       (evt) => openChoiceModal(evt, pushNarr, pushEvt, () => { renderAll(); setBtns('free'); })
@@ -467,11 +562,13 @@ export function advTime() {
   }
 }
 
+// ── 叙述区辅助函数 ────────────────────────────────────────────
+
 // 推送横幅
 function pushBanner() {
   const area = document.getElementById('narrative');
   if (!area) return;
-  
+
   const banner = document.createElement('div');
   banner.className = 'tbanner';
   const ps = PERIODS[G.period];
@@ -484,11 +581,11 @@ function pushBanner() {
   area.scrollTop = area.scrollHeight;
 }
 
-// 推送叙述
+// 推送叙述（静态文本 / 降级文本）
 function pushNarr(ps) {
   const area = document.getElementById('narrative');
   if (!area) return;
-  
+
   const b = document.createElement('div');
   b.className = 'nb';
   b.innerHTML = ps.map(p => `<p>${p}</p>`).join('');
@@ -496,11 +593,11 @@ function pushNarr(ps) {
   area.scrollTop = area.scrollHeight;
 }
 
-// 推送事件
+// 推送事件卡
 function pushEvt(title, desc) {
   const area = document.getElementById('narrative');
   if (!area) return;
-  
+
   const evc = document.createElement('div');
   evc.className = 'evc';
   evc.innerHTML = `
@@ -515,7 +612,7 @@ function pushEvt(title, desc) {
 function addDiv() {
   const area = document.getElementById('narrative');
   if (!area) return;
-  
+
   const d = document.createElement('div');
   d.className = 'ndiv'; d.innerHTML = '<span>· · ·</span>';
   area.appendChild(d);
@@ -523,7 +620,7 @@ function addDiv() {
 
 // 自动保存
 function autoSave() {
-  // 这里可以添加自动保存逻辑
+  // 自动保存逻辑（待实现）
 }
 
 // 获取今天的课程
